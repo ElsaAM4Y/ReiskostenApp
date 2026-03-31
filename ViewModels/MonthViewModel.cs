@@ -1,22 +1,15 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using ReiskostenApp.Data;
 using ReiskostenApp.Models;
 
 namespace ReiskostenApp.ViewModels;
 
 public class MonthViewModel : INotifyPropertyChanged
 {
-    private readonly AppRepository _repo;
-    private readonly AppState _state;
-
     public ObservableCollection<DayEntry> Days { get; set; }
         = new ObservableCollection<DayEntry>();
 
-    public int Year => _state.SelectedYear;
-    public int Month => _state.SelectedMonth;
-
-    public string Title => new DateTime(Year, Month, 1).ToString("MMMM yyyy");
+    public string Title => DateTime.Now.ToString("MMMM yyyy");
 
     private int _total;
     public int Total
@@ -25,11 +18,8 @@ public class MonthViewModel : INotifyPropertyChanged
         set { _total = value; OnPropertyChanged(nameof(Total)); }
     }
 
-    public MonthViewModel(AppRepository repo, AppState state)
+    public MonthViewModel()
     {
-        _repo = repo;
-        _state = state;
-
         LoadDays();
     }
 
@@ -37,13 +27,15 @@ public class MonthViewModel : INotifyPropertyChanged
     {
         Days.Clear();
 
-        int daysInMonth = DateTime.DaysInMonth(Year, Month);
+        int year = DateTime.Now.Year;
+        int month = DateTime.Now.Month;
+        int daysInMonth = DateTime.DaysInMonth(year, month);
 
         for (int day = 1; day <= daysInMonth; day++)
         {
             Days.Add(new DayEntry
             {
-                Date = new DateTime(Year, Month, day),
+                Date = new DateTime(year, month, day),
                 Value = 0,
                 Notes = string.Empty
             });

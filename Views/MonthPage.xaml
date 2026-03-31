@@ -3,58 +3,74 @@
     x:Class="ReiskostenApp.Views.MonthPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:vm="clr-namespace:ReiskostenApp.ViewModels"
     BackgroundColor="{DynamicResource PageBackgroundColor}">
 
-    <VerticalStackLayout Padding="16" Spacing="12">
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
 
-        <!-- Titel -->
-        <Label 
-            Text="{Binding Title}"
-            FontSize="22"
-            FontAttributes="Bold"
-            TextColor="{DynamicResource TextColor}" />
+            <!-- Selectie bovenaan -->
+            <HorizontalStackLayout Spacing="12">
 
-        <!-- Dagenlijst -->
-        <CollectionView ItemsSource="{Binding Days}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Grid ColumnDefinitions="100,60,*" Padding="0,6">
+                <Picker
+                    Title="Jaar"
+                    ItemsSource="{Binding Years}"
+                    SelectedItem="{Binding SelectedYear, Mode=TwoWay}"
+                    TextColor="{DynamicResource TextColor}" />
 
-                        <!-- Datum -->
-                        <Label 
-                            Text="{Binding Date, StringFormat='{0:dd MMM}'}"
-                            TextColor="{DynamicResource TextColor}"
-                            VerticalOptions="Center" />
+                <Picker
+                    Title="Maand"
+                    ItemsSource="{Binding Months}"
+                    SelectedItem="{Binding SelectedMonth, Mode=TwoWay}"
+                    ItemDisplayBinding="{Binding Name}"
+                    TextColor="{DynamicResource TextColor}" />
 
-                        <!-- Getal -->
-                        <Entry
-                            Grid.Column="1"
-                            Style="{StaticResource EntryStyle}"
-                            Keyboard="Numeric"
-                            Text="{Binding Value, Mode=TwoWay}"
-                            TextChanged="Entry_TextChanged" />
+            </HorizontalStackLayout>
 
-                        <!-- Aantekeningen -->
-                        <Editor
-                            Grid.Column="2"
-                            Style="{StaticResource EditorStyle}"
-                            Text="{Binding Notes, Mode=TwoWay}"
-                            AutoSize="TextChanges"
-                            Placeholder="Aantekening…" />
+            <!-- Titel -->
+            <Label 
+                Text="{Binding Title}"
+                FontSize="22"
+                FontAttributes="Bold"
+                TextColor="{DynamicResource TextColor}" />
 
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+            <!-- Lijst met dagen -->
+            <CollectionView ItemsSource="{Binding Days}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="100,60,*" Padding="0,6">
 
-        <!-- Totaal -->
-        <Label
-            Text="{Binding Total, StringFormat='Totaal: {0}'}"
-            FontSize="18"
-            FontAttributes="Bold"
-            TextColor="{DynamicResource TextColor}"
-            HorizontalOptions="End" />
+                            <Label 
+                                Text="{Binding Date, StringFormat='{0:dd MMM}'}"
+                                TextColor="{DynamicResource TextColor}"
+                                VerticalOptions="Center" />
 
-    </VerticalStackLayout>
+                            <Entry
+                                Grid.Column="1"
+                                Style="{StaticResource EntryStyle}"
+                                Keyboard="Numeric"
+                                Text="{Binding Value, Mode=TwoWay}"
+                                TextChanged="Entry_TextChanged" />
+
+                            <Editor
+                                Grid.Column="2"
+                                Style="{StaticResource EditorStyle}"
+                                Text="{Binding Notes, Mode=TwoWay}"
+                                AutoSize="TextChanges"
+                                Placeholder="Aantekening…" />
+
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Totaal -->
+            <Label
+                Text="{Binding Total, StringFormat='Totaal: {0}'}"
+                FontSize="18"
+                FontAttributes="Bold"
+                TextColor="{DynamicResource TextColor}"
+                HorizontalOptions="End" />
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

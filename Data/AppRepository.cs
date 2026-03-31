@@ -10,72 +10,74 @@ public class AppRepository
     public AppRepository(string dbPath)
     {
         _db = new SQLiteAsyncConnection(dbPath);
+        Initialize().Wait();
+    }
 
-        _db.CreateTableAsync<VolunteerDay>().Wait();
-        _db.CreateTableAsync<MonthMeta>().Wait();
-        _db.CreateTableAsync<Note>().Wait();
+    private async Task Initialize()
+    {
+        await _db.CreateTableAsync<DayRecord>();
+        await _db.CreateTableAsync<NoteRecord>();
+        await _db.CreateTableAsync<MonthMetaRecord>();
     }
 
     // -----------------------------
-    // VolunteerDay (maandgegevens)
+    // DAY RECORDS
     // -----------------------------
-
-    public async Task<List<VolunteerDay>> GetMonthEntriesAsync(int year, int month)
+    public async Task<List<DayRecord>> GetMonthAsync(int year, int month)
     {
-        string prefix = $"{year:D4}-{month:D2}-";
-
-        return await _db.Table<VolunteerDay>()
-                        .Where(x => x.Date.StartsWith(prefix))
-                        .ToListAsync();
+        return await _db.Table<DayRecord>()
+            .Where(x => x.Year == year && x.Month == month)
+            .ToListAsync();
     }
 
-    public async Task SaveDayAsync(VolunteerDay day)
+    public async Task SaveDayAsync(DayRecord record)
     {
-        var existing = await _db.Table<VolunteerDay>()
-                                .Where(x => x.Date == day.Date)
-                                .FirstOrDefaultAsync();
-
-        if (existing == null)
-        {
-            await _db.InsertAsync(day);
-        }
+        if (record.Id == 0)
+            await _db.InsertAsync(record);
         else
-        {
-            existing.Count = day.Count;
-            existing.Description = day.Description;
-            await _db.UpdateAsync(existing);
-        }
-    }
-
-    public async Task<int> GetTotalCountAsync(int year, int month)
-    {
-        string prefix = $"{year:D4}-{month:D2}-";
-
-        var items = await _db.Table<VolunteerDay>()
-                             .Where(x => x.Date.StartsWith(prefix))
-                             .ToListAsync();
-
-        return items.Sum(x => x.Count);
+            await _db.UpdateAsync(record);
     }
 
     // -----------------------------
-    // MonthMeta (vergoeding + ingediend)
+    // NOTES
     // -----------------------------
-
-    public async Task<MonthMeta> GetOrCreateMonthMetaAsync(int year, int month)
+    public async Task<List<NoteRecord>> GetNotesAsync()
     {
-        var meta = await _db.Table<MonthMeta>()
-                            .Where(x => x.Year == year && x.Month == month)
-                            .FirstOrDefaultAsync();
+        return await _db.Table<NoteRecord>()
+            .OrderByDescending(x => x.Created)
+            .ToListAsync();
+    }
+
+    public async Task SaveNoteAsync(NoteRecord note)
+    {
+        if (note.Id == 0)
+            await _db.InsertAsync(note);
+        else
+            await _db.UpdateAsync(note);
+    }
+
+    public async Task DeleteNoteAsync(NoteRecord note)
+    {
+        await _db.DeleteAsync(note);
+    }
+
+    // -----------------------------
+    // MONTH META
+    // -----------------------------
+    public async Task<MonthMetaRecord> GetOrCreateMonthMetaAsync(int year, int month)
+    {
+        var meta = await _db.Table<MonthMetaRecord>()
+            .Where(x => x.Year == year && x.Month == month)
+            .FirstOrDefaultAsync();
 
         if (meta == null)
         {
-            meta = new MonthMeta
+            meta = new MonthMetaRecord
             {
                 Year = year,
                 Month = month,
-                RatePerDay = 0m,
-                Submitted = false
+                Total = 0,
+                Comment = ""
             };
 
             await _db.InsertAsync(meta);
@@ -84,51 +86,23 @@ public class AppRepository
         return meta;
     }
 
-    public async Task SaveMonthMetaAsync(MonthMeta meta)
+    public async Task SaveMonthMetaAsync(MonthMetaRecord meta)
     {
-        var existing = await _db.Table<MonthMeta>()
-                                .Where(x => x.Year == meta.Year && x.Month == meta.Month)
-                                .FirstOrDefaultAsync();
-
-        if (existing == null)
-        {
+        if (meta.Id == 0)
             await _db.InsertAsync(meta);
-        }
         else
-        {
-            existing.RatePerDay = meta.RatePerDay;
-            existing.Submitted = meta.Submitted;
-            await _db.UpdateAsync(existing);
-        }
+            await _db.UpdateAsync(meta);
     }
 
     // -----------------------------
-    // Notes (aantekeningenpagina)
+    // TOTALS
     // -----------------------------
-
-    public async Task<List<Note>> GetNotesAsync()
+    public async Task<int> GetTotalCountAsync(int year)
     {
-        return await _db.Table<Note>()
-                        .OrderByDescending(n => n.CreatedAt)
-                        .ToListAsync();
-    }
+        var all = await _db.Table<DayRecord>()
+            .Where(x => x.Year == year)
+            .ToListAsync();
 
-    public async Task SaveNoteAsync(Note note)
-    {
-        if (note.Id == 0)
-        {
-            note.CreatedAt = DateTime.Now;
-            await _db.InsertAsync(note);
-        }
-        else
-        {
-            await _db.UpdateAsync(note);
-        }
-    }
-
-    public async Task DeleteNoteAsync(Note note)
-    {
-        if (note != null)
-            await _db.DeleteAsync(note);
+        return all.Sum(x => x.Value);
     }
 }

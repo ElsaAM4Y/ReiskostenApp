@@ -1,33 +1,21 @@
-﻿using ReiskostenApp.Models;
+﻿using ReiskostenApp.Data;
+using ReiskostenApp.Models;
 
 namespace ReiskostenApp;
 
 public partial class App : Application
 {
-    public static IServiceProvider Services { get; set; }
+    public static AppRepository Repository { get; private set; }
+    public static AppState State { get; private set; }
 
-    private readonly AppState _state;
-
-    public App(AppState state)
+    public App(AppRepository repo, AppState state)
     {
         InitializeComponent();
-        _state = state;
 
-        //// Startthema toepassen
-        //Theme.ThemeManager.ApplySavedTheme();
+        Repository = repo;
+        State = state;
 
-        //// OS-thema wijzigingen volgen
-        //RequestedThemeChanged += OnRequestedThemeChanged;
-
-        // 🔥 BELANGRIJK: dit voorkomt jouw foutmelding
         MainPage = new AppShell();
     }
 
-    //private void OnRequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
-    //{
-    //    if (_state.SelectedTheme == "System")
-    //    {
-    //        ThemeManager.Apply("System");
-    //    }
-    //}
 }

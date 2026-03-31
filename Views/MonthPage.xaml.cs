@@ -1,17 +1,15 @@
-using ReiskostenApp.Data;
-using ReiskostenApp.Models;
 using ReiskostenApp.ViewModels;
 
 namespace ReiskostenApp.Views;
 
 public partial class MonthPage : ContentPage
 {
-    private MonthViewModel vm;
+    private readonly MonthViewModel vm;
 
-    public MonthPage(AppRepository repo, AppState state)
+    public MonthPage()
     {
         InitializeComponent();
-        vm = new MonthViewModel(repo, state);
+        vm = new MonthViewModel();
         BindingContext = vm;
     }
 

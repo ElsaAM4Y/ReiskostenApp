@@ -1,52 +1,22 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ReiskostenApp.Views.NotesPage"
-             Title="Aantekeningen"
-             BackgroundColor="{DynamicResource PageBackgroundColor}"
-             x:Name="Page">
+<ContentPage
+    x:Class="ReiskostenApp.Views.NotesPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundColor="{DynamicResource PageBackgroundColor}">
 
     <VerticalStackLayout Padding="16" Spacing="12">
 
-        <!-- Nieuwe notitie -->
-        <HorizontalStackLayout Spacing="8">
-            <Entry Placeholder="Nieuwe aantekening..."
-                   Text="{Binding NewNoteText}"
-                   Style="{DynamicResource EntryStyle}"
-                   HorizontalOptions="FillAndExpand" />
-            <Button Text="Voeg toe"
-                    Style="{DynamicResource ButtonStyle}"
-                    Command="{Binding AddNoteCommand}" />
-        </HorizontalStackLayout>
+        <Label 
+            Text="Notities"
+            FontSize="22"
+            FontAttributes="Bold"
+            TextColor="{DynamicResource TextColor}" />
 
-        <!-- Lijst -->
-        <CollectionView ItemsSource="{Binding Notes}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Border Padding="12" Margin="0,6">
-
-                        <VerticalStackLayout Spacing="8">
-
-                            <Editor Text="{Binding Text}"
-                                    AutoSize="TextChanges"
-                                    Placeholder="Aantekening"
-                                    MaximumHeightRequest="120"
-                                    Style="{DynamicResource EditorStyle}"
-                                    MinimumWidthRequest="400"/>
-
-                            <Button Text="Verwijder"
-                                    BackgroundColor="#CC0000"
-                                    Style="{DynamicResource ButtonStyle}"
-                                    TextColor="White"
-                                    Command="{Binding BindingContext.DeleteNoteCommand, Source={x:Reference Page}}"
-                                    CommandParameter="{Binding}" />
-
-                        </VerticalStackLayout>
-
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+        <Editor
+            Style="{StaticResource EditorStyle}"
+            AutoSize="TextChanges"
+            Placeholder="Algemene notities…" />
 
     </VerticalStackLayout>
 </ContentPage>
