@@ -50,6 +50,8 @@ public class AppRepository
 
     public async Task SaveNoteAsync(NoteRecord note)
     {
+        note.Updated = DateTime.Now;
+
         if (note.Id == 0)
             await _db.InsertAsync(note);
         else
@@ -77,7 +79,9 @@ public class AppRepository
                 Year = year,
                 Month = month,
                 Total = 0,
-                Comment = ""
+                Comment = "",
+                Submitted = false,
+                RatePerDay = 0
             };
 
             await _db.InsertAsync(meta);

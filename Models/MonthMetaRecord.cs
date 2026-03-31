@@ -12,4 +12,7 @@ public class MonthMetaRecord
 
     public int Total { get; set; }
     public string Comment { get; set; } = string.Empty;
+
+    public bool Submitted { get; set; }
+    public decimal RatePerDay { get; set; }
 }

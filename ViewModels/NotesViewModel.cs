@@ -1,66 +1,42 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
-using ReiskostenApp.Data;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using ReiskostenApp.Models;
+using ReiskostenApp.Data;
 
-namespace ReiskostenApp.Views;
+namespace ReiskostenApp.ViewModels;
 
-public partial class NotesViewModel : ObservableObject
+public class NotesViewModel : INotifyPropertyChanged
 {
-    //public IRelayCommand OpenSettingsCommand => SharedCommands.OpenSettingsCommand;
-
     private readonly AppRepository _repo;
 
-    [ObservableProperty]
-    private ObservableCollection<Note> notes = new();
+    public ObservableCollection<NoteRecord> Notes { get; set; }
+        = new ObservableCollection<NoteRecord>();
 
-    [ObservableProperty]
-    private string newNoteText;
-
-    public IRelayCommand AddNoteCommand { get; }
-    public IRelayCommand<Note> DeleteNoteCommand { get; }
-
-    public NotesViewModel(AppRepository repo)
+    public NotesViewModel()
     {
-        _repo = repo;
-
-        AddNoteCommand = new RelayCommand(async () => await AddNoteAsync());
-        DeleteNoteCommand = new RelayCommand<Note>(async (note) => await DeleteNoteAsync(note));
+        _repo = App.Repository;
+        LoadNotes();
     }
 
-    public async Task LoadAsync()
+    private async void LoadNotes()
     {
         Notes.Clear();
         var items = await _repo.GetNotesAsync();
-
         foreach (var n in items)
             Notes.Add(n);
     }
 
-    private async Task AddNoteAsync()
+    public async Task SaveAsync(NoteRecord note)
     {
-        if (string.IsNullOrWhiteSpace(NewNoteText))
-            return;
-
-        var note = new Note
-        {
-            Text = NewNoteText,
-            CreatedAt = DateTime.Now
-        };
-
         await _repo.SaveNoteAsync(note);
-        Notes.Add(note);
-
-        NewNoteText = string.Empty;
+        LoadNotes();
     }
 
-    private async Task DeleteNoteAsync(Note note)
+    public async Task DeleteAsync(NoteRecord note)
     {
-        if (note == null)
-            return;
-
         await _repo.DeleteNoteAsync(note);
-        Notes.Remove(note);
+        LoadNotes();
     }
+
+    public event PropertyChangedEventHandler PropertyChanged;
 }
