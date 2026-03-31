@@ -1,102 +1,97 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using ReiskostenApp.Data;
+﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using ReiskostenApp.Models;
+using ReiskostenApp.Services;
 
-namespace ReiskostenApp.ViewModels;
-
-public partial class MonthTotalViewModel : ObservableObject
+namespace ReiskostenApp.ViewModels
 {
-    //public IRelayCommand OpenSettingsCommand => SharedCommands.OpenSettingsCommand;
-
-    private readonly AppRepository _repo;
-    private readonly AppState _state;
-
-    [ObservableProperty]
-    private int year;
-
-    [ObservableProperty]
-    private int month;
-
-    [ObservableProperty]
-    private int totalCount;
-
-    [ObservableProperty]
-    private decimal ratePerDay;
-
-    [ObservableProperty]
-    private bool submitted;
-
-    public string MonthLabel => $"{Month:00}-{Year}";
-    public decimal TotalAmount => TotalCount * RatePerDay;
-
-    public IRelayCommand SaveCommand { get; }
-
-    public MonthTotalViewModel(AppRepository repo, AppState state)
+    public partial class MonthTotalViewModel : INotifyPropertyChanged
     {
-        _repo = repo;
-        _state = state;
+        private readonly DatabaseService _db;
+        private int _year;
+        private int _month;
+        private int _totalDays;
+        private decimal _totalAmount;
+        private decimal _ratePerDay;
 
-        // 🔥 Haal maand op die in MonthViewModel gekozen is
-        Year = state.SelectedYear;
-        Month = state.SelectedMonth;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        SaveCommand = new RelayCommand(async () => await SaveAsync());
-    }
-
-    public async Task LoadAsync()
-    {
-        // Get all records for the selected year and month
-        var records = await _repo.GetMonthAsync(Year, Month);
-
-        // Calculate the total for the month
-        TotalCount = records.Sum(r => r.Value);
-
-        var meta = await _repo.GetOrCreateMonthMetaAsync(Year, Month);
-
-        // Set default rate if not set
-        if (meta.RatePerDay == 0)
-            meta.RatePerDay = 1.23m;
-
-        RatePerDay = meta.RatePerDay;
-        Submitted = meta.Submitted;
-
-        OnPropertyChanged(nameof(TotalAmount));
-    }
-
-
-    private async Task SaveAsync()
-    {
-        var meta = new MonthMetaRecord
+        public MonthTotalViewModel(DatabaseService db)
         {
-            Year = Year,
-            Month = Month,
-            RatePerDay = RatePerDay,
-            Submitted = Submitted
-        };
+            _db = db ?? throw new ArgumentNullException(nameof(db));
+        }
 
-        await _repo.SaveMonthMetaAsync(meta);
-    }
+        public int Year
+        {
+            get => _year;
+            set { if (_year == value) return; _year = value; OnPropertyChanged(); }
+        }
 
-    // Example: Dictionary with month as key and total as value
-    public Dictionary<int, decimal> MonthlyTotals { get; set; }
+        public int Month
+        {
+            get => _month;
+            set { if (_month == value) return; _month = value; OnPropertyChanged(); }
+        }
 
-    public MonthTotalViewModel(IEnumerable<DayRecord> records)
-    {
-        // Group expenses by month and sum the totals
-        MonthlyTotals = records
-            .GroupBy(r => new DateTime(r.Year, r.Month, r.Day).Month)
-            .ToDictionary(
-                g => g.Key,
-                g => g.Sum(r => r.Amount)
-            );
-    }
+        public int TotalDays
+        {
+            get => _totalDays;
+            private set { if (_totalDays == value) return; _totalDays = value; OnPropertyChanged(); }
+        }
 
-    // Optionally, get total for a specific month
-    public decimal GetTotalForMonth(int month)
-    {
-        return MonthlyTotals.TryGetValue(month, out var total) ? total : 0m;
+        public decimal TotalAmount
+        {
+            get => _totalAmount;
+            private set { if (_totalAmount == value) return; _totalAmount = value; OnPropertyChanged(); }
+        }
+
+        public decimal RatePerDay
+        {
+            get => _ratePerDay;
+            private set { if (_ratePerDay == value) return; _ratePerDay = value; OnPropertyChanged(); }
+        }
+
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        /// <summary>
+        /// Load totals for the given year/month and current rate from settings.
+        /// Safe to call multiple times; uses DatabaseService async APIs.
+        /// </summary>
+        public async Task LoadAsync(int year, int month)
+        {
+            Year = year;
+            Month = month;
+
+            // Ensure DB is initialized (idempotent)
+            await _db.InitializeAsync();
+
+            // Load settings to get the rate per day (fallback to 0)
+            var settings = await _db.GetSettingsAsync() ?? new AppSettings();
+            RatePerDay = settings.RatePerDay;
+
+            // Try to read stored month meta first
+            var meta = await _db.GetMonthMetaAsync(year, month);
+            if (meta != null)
+            {
+                TotalDays = meta.TotalDays;
+                TotalAmount = meta.TotalAmount;
+                // keep RatePerDay in sync with stored meta if present
+                if (meta.RatePerDay > 0) RatePerDay = meta.RatePerDay;
+                return;
+            }
+
+            // If no meta row exists, compute from day records
+            var days = await _db.GetDayRecordsForMonthAsync(year, month);
+            TotalDays = 0;
+            TotalAmount = 0m;
+            foreach (var d in days)
+            {
+                TotalDays += d.Value;
+                TotalAmount += d.Amount;
+            }
+        }
     }
 }
-
-

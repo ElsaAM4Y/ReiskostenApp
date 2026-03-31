@@ -1,36 +1,18 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0"  encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ReiskostenApp.Views.SettingsPage"
              Title="Settings"
              BackgroundColor="{DynamicResource BackgroundColor}">
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <Style x:Key="LabelPrimary" TargetType="Label">
-                <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
-                <Setter Property="FontSize" Value="16" />
-            </Style>
-            <Style x:Key="EntryStyle" TargetType="Entry">
-                <Setter Property="BackgroundColor" Value="{DynamicResource EntryBackgroundColor}" />
-                <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
-            </Style>
-            <Style x:Key="PrimaryButton" TargetType="Button">
-                <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryColor}" />
-                <Setter Property="TextColor" Value="White" />
-            </Style>
-        </ResourceDictionary>
-    </ContentPage.Resources>
-
-    <VerticalStackLayout Padding="12" Spacing="12">
-        <Label Text="Theme" Style="{StaticResource LabelPrimary}"/>
-        <Picker x:Name="ThemePicker" Title="Theme"/>
-        <Label Text="Rate per day" Style="{StaticResource LabelPrimary}"/>
-        <Entry x:Name="RateEntry" Keyboard="Numeric" Style="{StaticResource EntryStyle}"/>
-        <Label Text="Default month/year on startup" Style="{StaticResource LabelPrimary}"/>
-        <Grid ColumnDefinitions="*,*">
-            <Picker x:Name="MonthPicker" Grid.Column="0"/>
-            <Picker x:Name="YearPicker" Grid.Column="1"/>
-        </Grid>
-        <Button Text="Save settings" Style="{StaticResource PrimaryButton}" Clicked="OnSaveSettings"/>
-    </VerticalStackLayout>
+    <StackLayout Padding="12" Spacing="8">
+        <Label Text="Theme" TextColor="{DynamicResource TextColor}" />
+        <Picker x:Name="ThemePicker" />
+        <Label Text="Rate per day" TextColor="{DynamicResource TextColor}" />
+        <Entry x:Name="RateEntry" Keyboard="Numeric" />
+        <Label Text="Default Month" TextColor="{DynamicResource TextColor}" />
+        <Picker x:Name="MonthPicker" />
+        <Label Text="Default Year" TextColor="{DynamicResource TextColor}" />
+        <Picker x:Name="YearPicker" />
+        <Button Text="Save" Clicked="OnSaveClicked" />
+    </StackLayout>
 </ContentPage>

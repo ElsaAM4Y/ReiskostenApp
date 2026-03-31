@@ -4,36 +4,26 @@
              x:Class="ReiskostenApp.Views.NotesPage"
              Title="Notes"
              BackgroundColor="{DynamicResource BackgroundColor}">
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <Style x:Key="LabelPrimary" TargetType="Label">
-                <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
-                <Setter Property="FontSize" Value="16" />
-            </Style>
-            <Style x:Key="PrimaryButton" TargetType="Button">
-                <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryColor}" />
-                <Setter Property="TextColor" Value="White" />
-            </Style>
-        </ResourceDictionary>
-    </ContentPage.Resources>
-
-    <VerticalStackLayout Padding="12">
-        <Button Text="New Note" Style="{StaticResource PrimaryButton}" Clicked="OnNewNote"/>
-        <CollectionView x:Name="NotesCollection" Margin="0,8,0,0">
+    <StackLayout Padding="12" Spacing="8">
+        <Button Text="Add Note" Clicked="OnAddClicked" />
+        <CollectionView x:Name="NotesCollection" SelectionMode="Single" SelectionChanged="OnSelectionChanged">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Frame Padding="8" Margin="0,6,0,6" BackgroundColor="{DynamicResource EntryBackgroundColor}">
-                        <VerticalStackLayout>
-                            <Label Text="{Binding Title}" FontAttributes="Bold" Style="{StaticResource LabelPrimary}"/>
-                            <Label Text="{Binding Content}" LineBreakMode="TailTruncation" Style="{StaticResource LabelPrimary}"/>
-                            <HorizontalStackLayout HorizontalOptions="End">
-                                <Button Text="Edit" Clicked="OnEditNote"/>
-                                <Button Text="Delete" Clicked="OnDeleteNote"/>
-                            </HorizontalStackLayout>
-                        </VerticalStackLayout>
-                    </Frame>
+                    <Grid Padding="8">
+                        <Label Text="{Binding Title}" TextColor="{DynamicResource TextColor}" />
+                        <Label Grid.Row="1" Text="{Binding Updated, StringFormat='Updated: {0:G}'}" FontSize="Micro" TextColor="{DynamicResource TextColor}" />
+                    </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-    </VerticalStackLayout>
+
+        <StackLayout Padding="6">
+            <Entry x:Name="NoteTitle" Placeholder="Title" BackgroundColor="{DynamicResource EntryBackgroundColor}" />
+            <Editor x:Name="NoteContent" HeightRequest="120" BackgroundColor="{DynamicResource EntryBackgroundColor}" />
+            <StackLayout Orientation="Horizontal" Spacing="8">
+                <Button Text="Save" Clicked="OnSaveClicked" />
+                <Button Text="Delete" Clicked="OnDeleteClicked" />
+            </StackLayout>
+        </StackLayout>
+    </StackLayout>
 </ContentPage>

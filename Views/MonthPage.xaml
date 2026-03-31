@@ -4,42 +4,28 @@
              x:Class="ReiskostenApp.Views.MonthPage"
              Title="Month"
              BackgroundColor="{DynamicResource BackgroundColor}">
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <Style x:Key="LabelPrimary" TargetType="Label">
-                <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
-                <Setter Property="FontSize" Value="16" />
-            </Style>
-            <Style x:Key="EntryStyle" TargetType="Entry">
-                <Setter Property="BackgroundColor" Value="{DynamicResource EntryBackgroundColor}" />
-                <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
-            </Style>
-            <Style x:Key="PrimaryButton" TargetType="Button">
-                <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryColor}" />
-                <Setter Property="TextColor" Value="White" />
-            </Style>
-        </ResourceDictionary>
-    </ContentPage.Resources>
+    <StackLayout Padding="12" Spacing="10">
+        <StackLayout Orientation="Horizontal" Spacing="8">
+            <Picker x:Name="MonthPicker" WidthRequest="180" />
+            <Picker x:Name="YearPicker" WidthRequest="120" />
+            <Button Text="Save" Clicked="OnSaveClicked" />
+        </StackLayout>
 
-    <VerticalStackLayout Padding="12" Spacing="8">
-        <Grid ColumnDefinitions="*,*,Auto" RowSpacing="8">
-            <Picker x:Name="MonthPicker" Grid.Column="0" Title="Month" />
-            <Picker x:Name="YearPicker" Grid.Column="1" Title="Year" />
-            <Button Text="Save" Grid.Column="2" Style="{StaticResource PrimaryButton}" Clicked="OnSaveClicked"/>
-        </Grid>
-
-        <CollectionView x:Name="DaysCollection" Margin="0,12,0,0" ItemsLayout="VerticalList">
+        <CollectionView x:Name="DaysCollection" ItemsSource="{Binding Days}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Padding="6" ColumnDefinitions="40,*,200">
-                        <Label Text="{Binding Day}" VerticalOptions="Center" Style="{StaticResource LabelPrimary}" />
-                        <Entry Text="{Binding Value, Mode=TwoWay}" Keyboard="Numeric" Style="{StaticResource EntryStyle}" />
-                        <Entry Text="{Binding Notes, Mode=TwoWay}" Placeholder="Notes" Style="{StaticResource EntryStyle}" />
+                    <Grid Padding="6" ColumnDefinitions="40,*,80">
+                        <Label Text="{Binding Day}" VerticalOptions="Center" TextColor="{DynamicResource TextColor}" />
+                        <Entry Grid.Column="1" Text="{Binding Notes, Mode=TwoWay}" BackgroundColor="{DynamicResource EntryBackgroundColor}" />
+                        <StackLayout Grid.Column="2" Orientation="Vertical">
+                            <Stepper Minimum="0" Maximum="2" Increment="1" Value="{Binding Value, Mode=TwoWay}" />
+                            <Label Text="{Binding Amount, StringFormat='{}{0:C}'}" HorizontalOptions="End" TextColor="{DynamicResource TextColor}" />
+                        </StackLayout>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <Label x:Name="MonthTotalLabel" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,12,0,0" Style="{StaticResource LabelPrimary}" />
-    </VerticalStackLayout>
+        <Label x:Name="MonthTotalLabel" Text="Totals" TextColor="{DynamicResource TextColor}" HorizontalOptions="Center" />
+    </StackLayout>
 </ContentPage>

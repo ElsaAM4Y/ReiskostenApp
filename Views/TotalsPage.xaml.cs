@@ -1,14 +1,25 @@
+using System;
 using Microsoft.Maui.Controls;
+using ReiskostenApp.Services;
 
-namespace ReiskostenApp.Views;
-
-public partial class TotalsPage : ContentPage
+namespace ReiskostenApp.Views
 {
-    private readonly DatabaseService _db;
-
-    public TotalsPage(DatabaseService db)
+    public partial class TotalsPage : ContentPage
     {
-        InitializeComponent();
-        _db = db;
+        private readonly DatabaseService _db;
+
+        public TotalsPage(DatabaseService db)
+        {
+            InitializeComponent();
+            _db = db ?? throw new ArgumentNullException(nameof(db));
+        }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            await _db.InitializeAsync();
+            var metas = await _db.GetAllMonthMetaAsync();
+            TotalsCollection.ItemsSource = metas;
+        }
     }
 }

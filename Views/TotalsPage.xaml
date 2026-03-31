@@ -4,28 +4,18 @@
              x:Class="ReiskostenApp.Views.TotalsPage"
              Title="Totals"
              BackgroundColor="{DynamicResource BackgroundColor}">
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <Style x:Key="LabelPrimary" TargetType="Label">
-                <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
-                <Setter Property="FontSize" Value="16" />
-            </Style>
-        </ResourceDictionary>
-    </ContentPage.Resources>
-
-    <VerticalStackLayout Padding="12">
-        <CollectionView x:Name="MetaCollection">
+    <StackLayout Padding="12">
+        <CollectionView x:Name="TotalsCollection">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid Padding="8" ColumnDefinitions="*,Auto">
-                        <VerticalStackLayout>
-                            <Label Text="{Binding YearMonth}" FontAttributes="Bold" Style="{StaticResource LabelPrimary}"/>
-                            <Label Text="{Binding Summary}" Style="{StaticResource LabelPrimary}"/>
-                        </VerticalStackLayout>
-                        <Label Text="{Binding TotalAmount}" VerticalOptions="Center" HorizontalOptions="End" Style="{StaticResource LabelPrimary}"/>
+                        <Label Text="{Binding Year}" />
+                        <Label Grid.Column="1" Text="{Binding TotalAmount, StringFormat='{}{0:C}'}" HorizontalOptions="End" />
+                        <Label Grid.Row="1" Text="{Binding Month}" FontSize="Micro" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding TotalDays, StringFormat='Days: {0}'}" HorizontalOptions="End" FontSize="Micro" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-    </VerticalStackLayout>
+    </StackLayout>
 </ContentPage>

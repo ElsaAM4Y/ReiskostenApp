@@ -1,21 +1,17 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls;
-using ReiskostenApp.Models;
-using ReiskostenApp.Services;
+﻿// App.xaml.cs
 using System;
+using Microsoft.Maui.Controls;
+using ReiskostenApp.Services;
 
 namespace ReiskostenApp
 {
-    public partial class App : Application
+    public partial class App : Microsoft.Maui.Controls.Application
     {
         private readonly DatabaseService _db;
 
-        // DI will inject DatabaseService (registered in MauiProgram)
         public App(DatabaseService db)
         {
-            InitializeComponent(); // ensure App.xaml x:Class matches namespace/class
+            InitializeComponent();
             _db = db ?? throw new ArgumentNullException(nameof(db));
 
             // Temporary loading page while DB initializes
@@ -26,34 +22,24 @@ namespace ReiskostenApp
             });
         }
 
-        // Expose repository for legacy code that referenced App.Repository
+        // Expose repository for legacy code that expects App.Repository
         public DatabaseService Repository => _db;
 
         protected override async void OnStart()
         {
             base.OnStart();
 
-            // Initialize DB (creates tables and ensures AppSettings row)
             await _db.InitializeAsync();
 
-            // Load or create settings
-            var settings = await _db.GetSettingsAsync() ?? new AppSettings();
+            var settings = await _db.GetSettingsAsync() ?? new Models.AppSettings();
             await _db.SaveSettingsAsync(settings);
 
-            // Apply theme resources (System/Light/Dark)
+            // Apply theme resources (keeps System/Light/Dark behavior optional)
             ApplyThemeResources(settings.SelectedTheme);
 
-            // Set OS-level theme behavior
-            if (string.Equals(settings.SelectedTheme, "Light", StringComparison.OrdinalIgnoreCase))
-                Microsoft.Maui.Controls.Application.Current.UserAppTheme = OSAppTheme.Light;
-            else if (string.Equals(settings.SelectedTheme, "Dark", StringComparison.OrdinalIgnoreCase))
-                Microsoft.Maui.Controls.Application.Current.UserAppTheme = OSAppTheme.Dark;
-            else
-                Microsoft.Maui.Controls.Application.Current.UserAppTheme = OSAppTheme.Unspecified;
-
-            // Resolve start page from DI (fallback to manual construction)
-            var monthPage = Microsoft.Maui.Hosting.MauiApplication.Current?.Services?.GetService<ReiskostenApp.Views.MonthPage>()
-                            ?? new ReiskostenApp.Views.MonthPage(_db);
+            // Set start page via DI if available, otherwise construct manually
+            var monthPage = Microsoft.Maui.Controls.Application.Current?.Handler?.MauiContext?.Services?.GetService<Views.MonthPage>()
+                            ?? new Views.MonthPage(_db);
 
             MainPage = new NavigationPage(monthPage)
             {
