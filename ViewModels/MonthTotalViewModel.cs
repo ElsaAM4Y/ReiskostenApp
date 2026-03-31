@@ -46,11 +46,15 @@ public partial class MonthTotalViewModel : ObservableObject
 
     public async Task LoadAsync()
     {
-        TotalCount = await _repo.GetTotalCountAsync(Year, Month);
+        // Get all records for the selected year and month
+        var records = await _repo.GetMonthAsync(Year, Month);
+
+        // Calculate the total for the month
+        TotalCount = records.Sum(r => r.Value);
 
         var meta = await _repo.GetOrCreateMonthMetaAsync(Year, Month);
 
-        // Standaardvergoeding instellen als er nog niets is ingevuld
+        // Set default rate if not set
         if (meta.RatePerDay == 0)
             meta.RatePerDay = 1.23m;
 
@@ -73,4 +77,26 @@ public partial class MonthTotalViewModel : ObservableObject
 
         await _repo.SaveMonthMetaAsync(meta);
     }
+
+    // Example: Dictionary with month as key and total as value
+    public Dictionary<int, decimal> MonthlyTotals { get; set; }
+
+    public MonthTotalViewModel(IEnumerable<DayRecord> records)
+    {
+        // Group expenses by month and sum the totals
+        MonthlyTotals = records
+            .GroupBy(r => new DateTime(r.Year, r.Month, r.Day).Month)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Sum(r => r.Amount)
+            );
+    }
+
+    // Optionally, get total for a specific month
+    public decimal GetTotalForMonth(int month)
+    {
+        return MonthlyTotals.TryGetValue(month, out var total) ? total : 0m;
+    }
 }
+
+

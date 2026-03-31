@@ -10,7 +10,8 @@ public class DayRecord
     public int Year { get; set; }
     public int Month { get; set; }
     public int Day { get; set; }
-
     public int Value { get; set; }
+    public decimal Amount { get; set; }
     public string Notes { get; set; } = string.Empty;
+    public DateTime Date { get; set; }
 }

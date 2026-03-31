@@ -18,7 +18,7 @@ public class NotesViewModel : INotifyPropertyChanged
         LoadNotes();
     }
 
-    private async void LoadNotes()
+    public async Task LoadNotes()
     {
         Notes.Clear();
         var items = await _repo.GetNotesAsync();
