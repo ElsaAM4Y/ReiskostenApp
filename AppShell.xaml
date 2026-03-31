@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Shell
+    x:Class="ReiskostenApp.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:ReiskostenApp.Views"
+    Shell.FlyoutBehavior="Flyout"
+
+    Shell.BackgroundColor="{DynamicResource TabBarBackgroundColor}"
+    Shell.TitleColor="{DynamicResource TabBarTitleColor}"
+    Shell.UnselectedColor="{DynamicResource TabBarUnselectedColor}"
+    NavBarHasShadow="False">
+
+    <ShellContent 
+        Route="month"
+        Title="Maand"
+        ContentTemplate="{DataTemplate views:MonthPage}"
+        />
+
+    <ShellContent
+        Route="totals"
+        Title="Totaal"
+        ContentTemplate="{DataTemplate views:TotalsPage}"/>
+
+    <ShellContent
+    Route="notes"
+    Title="Aantekeningen"
+    ContentTemplate="{DataTemplate views:NotesPage}"/>
+
+    <TabBar>
+        <ShellContent 
+            Title="Maand"
+            Icon="calendar.png"
+            ContentTemplate="{DataTemplate views:MonthPage}" />
+
+        <ShellContent 
+            Title="Totalen"
+            Icon="totals.png"
+            ContentTemplate="{DataTemplate views:TotalsPage}" />
+
+        <ShellContent 
+            Title="Aantekeningen"
+            Icon="notes.png"
+            ContentTemplate="{DataTemplate views:NotesPage}" />
+    </TabBar>
+
+    <ShellContent 
+        Route="settings"
+        Title="SettingsPage"
+        ContentTemplate="{DataTemplate views:SettingsPage}" />
+
+  
+</Shell>

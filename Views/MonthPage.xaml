@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="ReiskostenApp.Views.MonthPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <VerticalStackLayout Padding="20" Spacing="16">
+
+        <Label Text="Maandoverzicht"
+               FontSize="24"
+               FontAttributes="Bold"
+               Style="{DynamicResource LabelStyle}" />
+
+        <Border
+            Style="{DynamicResource EntryStyle}"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 12"
+            Padding="16">
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Totaal aantal ritten:"
+                       Style="{DynamicResource LabelStyle}" />
+                <Label Text="{Binding TotalRides}"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       Style="{DynamicResource LabelStyle}" />
+            </VerticalStackLayout>
+        </Border>
+
+        <CollectionView ItemsSource="{Binding Rides}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border
+                        BackgroundColor="{DynamicResource EntryBackgroundColor}"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 10"
+                        Margin="0,6"
+                        Padding="12">
+
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Date}"
+                                   Style="{DynamicResource LabelStyle}" />
+                            <Label Text="{Binding Distance}"
+                                   Style="{DynamicResource LabelStyle}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </VerticalStackLayout>
+
+</ContentPage>

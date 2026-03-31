@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ReiskostenApp.Resources.Styles.DarkTheme">
+    <Color x:Key="PrimaryColor">#121212</Color>
+    <Color x:Key="TextColor">#FFFFFF</Color>
+    <Color x:Key="PageBackgroundColor">#121212</Color>
+    <Color x:Key="EntryBackgroundColor">#232323</Color>
+    <Color x:Key="AccentColor">#AC99EA</Color>
+    <Color x:Key="PlaceholderColor">#A0A0A0</Color>
+
+    <Style TargetType="ContentPage">
+        <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryColor}" />
+    </Style>
+
+    <Style TargetType="Label">
+        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+    </Style>
+
+    <Color x:Key="SwitchOnColor">#4CC2FF</Color>
+    <Color x:Key="SwitchThumbColor">#E0E0E0</Color>
+
+
+</ResourceDictionary>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ReiskostenApp.Views.SettingsPage"
+             xmlns:local="clr-namespace:ReiskostenApp"
+             Title="SettingsPage">
+    <StackLayout Margin="20"
+                 VerticalOptions="Center">
+
+        <Picker x:Name="themePicker"
+                Title="Kies thema"
+                SelectedIndexChanged="OnPickerSelectionChanged">
+            <Picker.Items>
+                <!-- 0 -->
+                <!--<x:String>Systeem</x:String>-->
+                <!-- 1 -->
+                <x:String>Licht</x:String>
+                <!-- 2 -->
+                <x:String>Donker</x:String>
+            </Picker.Items>
+        </Picker>
+        <Label x:Name="statusLabel"
+               HorizontalOptions="Center" />
+    </StackLayout>
+</ContentPage>

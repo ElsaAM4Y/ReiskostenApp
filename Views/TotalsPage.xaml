@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ReiskostenApp.Views.TotalsPage"
+             Title="Totalen"
+             Style="{DynamicResource PageBackgroundColor}" >
+
+        <VerticalStackLayout Padding="16" Spacing="16">
+
+        <!-- Maandlabel -->
+        <Label Text="{Binding MonthLabel}"
+               Style="{DynamicResource LabelStyle}"
+               HorizontalOptions="Center" />
+
+        <!-- Aantal keren gewerkt -->
+        <Label Text="{Binding TotalCount, StringFormat='Aantal keren gewerkt: {0}'}"
+               Style="{DynamicResource LabelStyle}"
+               HorizontalOptions="Center" />
+
+        <!-- Vergoeding per keer -->
+        <HorizontalStackLayout Spacing="8">
+            <Label Text="Vergoeding per keer:" VerticalOptions="Center" Style="{DynamicResource LabelStyle}" />
+            <Entry Text="{Binding RatePerDay}"
+                   Style="{DynamicResource EntryStyle}"
+                   WidthRequest="100"
+                   Keyboard="Numeric" />
+        </HorizontalStackLayout>
+
+        <!-- Totaalbedrag -->
+        <Label Text="{Binding TotalAmount, StringFormat='Totaal: €{0:F2}'}"
+               FontSize="20"
+               FontAttributes="Bold"
+               Style="{DynamicResource LabelStyle}"
+               HorizontalOptions="Center" />
+
+        <!-- Ingediend -->
+        <HorizontalStackLayout Spacing="8">
+            <Label Text="Ingediend:" VerticalOptions="Center" Style="{DynamicResource LabelStyle}" />
+            <Switch IsToggled="{Binding Submitted}" Style="{DynamicResource SwitchStyle}" />
+        </HorizontalStackLayout>
+
+        <!-- Opslaan -->
+        <Button Text="Opslaan"
+                Style="{DynamicResource ButtonStyle}"
+                Command="{Binding SaveCommand}" />
+
+    </VerticalStackLayout>
+
+</ContentPage>
