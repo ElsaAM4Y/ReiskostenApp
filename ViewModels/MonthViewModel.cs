@@ -1,89 +1,63 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using ReiskostenApp.Data;
 using ReiskostenApp.Models;
-using ReiskostenApp.ViewModels;
-using System.Collections.ObjectModel;
 
 namespace ReiskostenApp.ViewModels;
 
-public partial class MonthViewModel : ObservableObject
+public class MonthViewModel : INotifyPropertyChanged
 {
-    //public IRelayCommand OpenSettingsCommand => SharedCommands.OpenSettingsCommand;
-
     private readonly AppRepository _repo;
     private readonly AppState _state;
 
-    [ObservableProperty]
-    private int year;
+    public ObservableCollection<DayEntry> Days { get; set; }
+        = new ObservableCollection<DayEntry>();
 
-    [ObservableProperty]
-    private int month;
+    public int Year => _state.SelectedYear;
+    public int Month => _state.SelectedMonth;
 
-    [ObservableProperty]
-    private int daysWorked;
+    public string Title => new DateTime(Year, Month, 1).ToString("MMMM yyyy");
 
-    [ObservableProperty]
-    private ObservableCollection<DayEntryViewModel> days = new();
-
-    public IRelayCommand LoadCommand { get; }
-    public IRelayCommand SaveCommand { get; }
-    public IRelayCommand<DayEntryViewModel> ClearNotesCommand { get; }
+    private int _total;
+    public int Total
+    {
+        get => _total;
+        set { _total = value; OnPropertyChanged(nameof(Total)); }
+    }
 
     public MonthViewModel(AppRepository repo, AppState state)
     {
         _repo = repo;
         _state = state;
 
-        Year = state.SelectedYear == 0 ? DateTime.Now.Year : state.SelectedYear;
-        Month = state.SelectedMonth == 0 ? DateTime.Now.Month : state.SelectedMonth;
-
-        LoadCommand = new RelayCommand(async () => await LoadAsync());
-        SaveCommand = new RelayCommand(async () => await SaveAsync());
-        ClearNotesCommand = new RelayCommand<DayEntryViewModel>((day) => day.Notes = string.Empty);
+        LoadDays();
     }
 
-    public async Task LoadAsync()
+    private void LoadDays()
     {
         Days.Clear();
 
-        var items = await _repo.GetMonthEntriesAsync(Year, Month);
+        int daysInMonth = DateTime.DaysInMonth(Year, Month);
 
-        for (int d = 1; d <= DateTime.DaysInMonth(Year, Month); d++)
+        for (int day = 1; day <= daysInMonth; day++)
         {
-            var date = new DateTime(Year, Month, d);
-            var existing = items.FirstOrDefault(x => x.Date == date.ToString("yyyy-MM-dd"));
-
-            Days.Add(new DayEntryViewModel
+            Days.Add(new DayEntry
             {
-                Day = d,
-                Count = existing?.Count ?? 0,
-                Notes = existing?.Description ?? "",
-                Date = date
+                Date = new DateTime(Year, Month, day),
+                Value = 0,
+                Notes = string.Empty
             });
         }
 
-        DaysWorked = Days.Sum(x => x.Count);
-
-        // 🔥 BELANGRIJK: maand opslaan voor Totalenpagina
-        _state.SelectedYear = Year;
-        _state.SelectedMonth = Month;
+        RecalculateTotal();
     }
 
-    private async Task SaveAsync()
+    public void RecalculateTotal()
     {
-        foreach (var d in Days)
-        {
-            var model = new VolunteerDay
-            {
-                Date = d.Date.ToString("yyyy-MM-dd"),
-                Count = d.Count,
-                Description = d.Notes
-            };
-
-            await _repo.SaveDayAsync(model);
-        }
-
-        DaysWorked = Days.Sum(x => x.Count);
+        Total = Days.Sum(d => d.Value);
     }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+    void OnPropertyChanged(string name)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

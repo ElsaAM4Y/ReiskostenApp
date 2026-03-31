@@ -1,21 +1,22 @@
+using ReiskostenApp.Data;
+using ReiskostenApp.Models;
 using ReiskostenApp.ViewModels;
-using ReiskostenApp.Views;
 
 namespace ReiskostenApp.Views;
 
 public partial class MonthPage : ContentPage
 {
-    private MonthViewModel Vm => (MonthViewModel)BindingContext;
+    private MonthViewModel vm;
 
-    public MonthPage(MonthViewModel vm)
+    public MonthPage(AppRepository repo, AppState state)
     {
         InitializeComponent();
+        vm = new MonthViewModel(repo, state);
         BindingContext = vm;
     }
 
-    protected override async void OnAppearing()
+    void Entry_TextChanged(object sender, TextChangedEventArgs e)
     {
-        base.OnAppearing();
-        await Vm.LoadAsync();
+        vm.RecalculateTotal();
     }
 }

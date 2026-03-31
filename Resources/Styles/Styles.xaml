@@ -36,14 +36,24 @@
         <Setter Property="ThumbColor" Value="{DynamicResource SwitchThumbColor}" />
     </Style>
 
-    <!-- Editor -->
+    <!-- EditorStyle -->
     <Style TargetType="Editor" x:Key="EditorStyle">
         <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
         <Setter Property="BackgroundColor" Value="{DynamicResource EntryBackgroundColor}" />
         <Setter Property="PlaceholderColor" Value="{DynamicResource PlaceholderColor}" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="Margin" Value="0,8" />
+        <Setter Property="Margin" Value="0,4" />
     </Style>
+
+    <!-- EntryStyle -->
+    <Style TargetType="Entry" x:Key="EntryStyle">
+        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource EntryBackgroundColor}" />
+        <Setter Property="PlaceholderColor" Value="{DynamicResource PlaceholderColor}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+    </Style>
+
 
 
 </ResourceDictionary>

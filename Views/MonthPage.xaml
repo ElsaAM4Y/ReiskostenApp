@@ -3,52 +3,58 @@
     x:Class="ReiskostenApp.Views.MonthPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:ReiskostenApp.ViewModels"
     BackgroundColor="{DynamicResource PageBackgroundColor}">
 
-    <VerticalStackLayout Padding="20" Spacing="16">
+    <VerticalStackLayout Padding="16" Spacing="12">
 
-        <Label Text="Maandoverzicht"
-               FontSize="24"
-               FontAttributes="Bold"
-               Style="{DynamicResource LabelStyle}" />
+        <!-- Titel -->
+        <Label 
+            Text="{Binding Title}"
+            FontSize="22"
+            FontAttributes="Bold"
+            TextColor="{DynamicResource TextColor}" />
 
-        <Border
-            Style="{DynamicResource EntryStyle}"
-            StrokeThickness="0"
-            StrokeShape="RoundRectangle 12"
-            Padding="16">
-
-            <VerticalStackLayout Spacing="8">
-                <Label Text="Totaal aantal ritten:"
-                       Style="{DynamicResource LabelStyle}" />
-                <Label Text="{Binding TotalRides}"
-                       FontSize="20"
-                       FontAttributes="Bold"
-                       Style="{DynamicResource LabelStyle}" />
-            </VerticalStackLayout>
-        </Border>
-
-        <CollectionView ItemsSource="{Binding Rides}">
+        <!-- Dagenlijst -->
+        <CollectionView ItemsSource="{Binding Days}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border
-                        BackgroundColor="{DynamicResource EntryBackgroundColor}"
-                        StrokeThickness="0"
-                        StrokeShape="RoundRectangle 10"
-                        Margin="0,6"
-                        Padding="12">
+                    <Grid ColumnDefinitions="100,60,*" Padding="0,6">
 
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="{Binding Date}"
-                                   Style="{DynamicResource LabelStyle}" />
-                            <Label Text="{Binding Distance}"
-                                   Style="{DynamicResource LabelStyle}" />
-                        </VerticalStackLayout>
-                    </Border>
+                        <!-- Datum -->
+                        <Label 
+                            Text="{Binding Date, StringFormat='{0:dd MMM}'}"
+                            TextColor="{DynamicResource TextColor}"
+                            VerticalOptions="Center" />
+
+                        <!-- Getal -->
+                        <Entry
+                            Grid.Column="1"
+                            Style="{StaticResource EntryStyle}"
+                            Keyboard="Numeric"
+                            Text="{Binding Value, Mode=TwoWay}"
+                            TextChanged="Entry_TextChanged" />
+
+                        <!-- Aantekeningen -->
+                        <Editor
+                            Grid.Column="2"
+                            Style="{StaticResource EditorStyle}"
+                            Text="{Binding Notes, Mode=TwoWay}"
+                            AutoSize="TextChanges"
+                            Placeholder="Aantekening…" />
+
+                    </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-    </VerticalStackLayout>
+        <!-- Totaal -->
+        <Label
+            Text="{Binding Total, StringFormat='Totaal: {0}'}"
+            FontSize="18"
+            FontAttributes="Bold"
+            TextColor="{DynamicResource TextColor}"
+            HorizontalOptions="End" />
 
+    </VerticalStackLayout>
 </ContentPage>
