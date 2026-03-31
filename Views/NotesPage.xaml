@@ -1,22 +1,39 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
-    x:Class="ReiskostenApp.Views.NotesPage"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    BackgroundColor="{DynamicResource PageBackgroundColor}">
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ReiskostenApp.Views.NotesPage"
+             Title="Notes"
+             BackgroundColor="{DynamicResource BackgroundColor}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="LabelPrimary" TargetType="Label">
+                <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+            <Style x:Key="PrimaryButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryColor}" />
+                <Setter Property="TextColor" Value="White" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-    <VerticalStackLayout Padding="16" Spacing="12">
-
-        <Label 
-            Text="Notities"
-            FontSize="22"
-            FontAttributes="Bold"
-            TextColor="{DynamicResource TextColor}" />
-
-        <Editor
-            Style="{StaticResource EditorStyle}"
-            AutoSize="TextChanges"
-            Placeholder="Algemene notities…" />
-
+    <VerticalStackLayout Padding="12">
+        <Button Text="New Note" Style="{StaticResource PrimaryButton}" Clicked="OnNewNote"/>
+        <CollectionView x:Name="NotesCollection" Margin="0,8,0,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="8" Margin="0,6,0,6" BackgroundColor="{DynamicResource EntryBackgroundColor}">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Title}" FontAttributes="Bold" Style="{StaticResource LabelPrimary}"/>
+                            <Label Text="{Binding Content}" LineBreakMode="TailTruncation" Style="{StaticResource LabelPrimary}"/>
+                            <HorizontalStackLayout HorizontalOptions="End">
+                                <Button Text="Edit" Clicked="OnEditNote"/>
+                                <Button Text="Delete" Clicked="OnDeleteNote"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </VerticalStackLayout>
 </ContentPage>

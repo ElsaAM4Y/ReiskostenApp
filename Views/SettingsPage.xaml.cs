@@ -1,42 +1,65 @@
-using ReiskostenApp.ViewModels;
-using ReiskostenApp.Resources.Styles;
-// Add the following using directive if your theme classes are in a different namespace
-// using ReiskostenApp.Themes;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
+using ReiskostenApp.Models;
+using ReiskostenApp.Services;
+using System.Globalization;
 
-namespace ReiskostenApp.Views
+namespace ReiskostenApp.Views;
+
+public partial class SettingsPage : ContentPage
 {
-    public partial class SettingsPage : ContentPage
+    private readonly DatabaseService _db;
+    private AppSettings _settings;
+
+    public SettingsPage(DatabaseService db)
     {
-        public SettingsPage()
-        {
-            InitializeComponent();
+        InitializeComponent();
+        _db = db;
 
+        ThemePicker.ItemsSource = new List<string> { "System", "Light", "Dark" };
+        MonthPicker.ItemsSource = CultureInfo.CurrentCulture.DateTimeFormat.MonthNames.Take(12).ToList();
+        YearPicker.ItemsSource = Enumerable.Range(DateTime.Now.Year - 5, 11).ToList();
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        _settings = await _db.GetSettingsAsync() ?? new AppSettings();
+
+        ThemePicker.SelectedItem = _settings.SelectedTheme ?? "System";
+        RateEntry.Text = _settings.RatePerDay.ToString(CultureInfo.InvariantCulture);
+        MonthPicker.SelectedIndex = Math.Max(0, (_settings.SelectedMonth == 0 ? DateTime.Now.Month : _settings.SelectedMonth) - 1);
+        YearPicker.SelectedItem = _settings.SelectedYear == 0 ? DateTime.Now.Year : _settings.SelectedYear;
+    }
+
+    private async void OnSaveSettings(object sender, EventArgs e)
+    {
+        if (_settings == null) _settings = new AppSettings();
+
+        _settings.SelectedTheme = ThemePicker.SelectedItem?.ToString() ?? "System";
+        if (decimal.TryParse(RateEntry.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out var rate))
+            _settings.RatePerDay = rate;
+
+        if (MonthPicker.SelectedIndex >= 0)
+            _settings.SelectedMonth = MonthPicker.SelectedIndex + 1;
+        if (YearPicker.SelectedItem is int y)
+            _settings.SelectedYear = y;
+
+        await _db.SaveSettingsAsync(_settings);
+
+        // Apply theme resources immediately via App
+        if (Application.Current is App app)
+        {
+            app.ApplyThemeResources(_settings.SelectedTheme);
+            if (_settings.SelectedTheme == "Light")
+                Application.Current.UserAppTheme = OSAppTheme.Light;
+            else if (_settings.SelectedTheme == "Dark")
+                Application.Current.UserAppTheme = OSAppTheme.Dark;
+            else
+                Application.Current.UserAppTheme = OSAppTheme.Unspecified;
         }
 
-        void OnPickerSelectionChanged(object sender, EventArgs e)
-        {
-            Picker picker = sender as Picker;
-            string selected = picker.SelectedItem as string;
-            Theme theme = selected == "Donker" ? Theme.Dark : Theme.Light;
-
-            ICollection<ResourceDictionary> mergedDictionaries = Application.Current.Resources.MergedDictionaries;
-            if (mergedDictionaries != null)
-            {
-                mergedDictionaries.Clear();
-
-                switch (theme)
-                {
-                    case Theme.Dark:
-                        mergedDictionaries.Add(new DarkTheme()); // <-- Ensure DarkTheme is defined in your project
-                        break;
-                    case Theme.Light:
-                    default:
-                        mergedDictionaries.Add(new LightTheme()); // <-- Ensure LightTheme is defined in your project
-                        break;
-                }
-                statusLabel.Text = $"{theme.ToString()} theme geladen.";
-            }
-        }
-
+        await DisplayAlert("Saved", "Settings saved.", "OK");
     }
 }

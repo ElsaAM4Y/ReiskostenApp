@@ -1,20 +1,14 @@
-using ReiskostenApp.ViewModels;
+using Microsoft.Maui.Controls;
 
 namespace ReiskostenApp.Views;
 
 public partial class TotalsPage : ContentPage
 {
-    public TotalsPage(MonthTotalViewModel vm)
+    private readonly DatabaseService _db;
+
+    public TotalsPage(DatabaseService db)
     {
         InitializeComponent();
-        BindingContext = vm;
-    }
-
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-
-        if (BindingContext is MonthTotalViewModel vm)
-            await vm.LoadAsync();
+        _db = db;
     }
 }

@@ -1,56 +1,37 @@
 ﻿using CommunityToolkit.Maui;
-using ReiskostenApp.Data;
-using ReiskostenApp.Models;
-using ReiskostenApp.ViewModels;
-using ReiskostenApp.Views;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Maui;
+using Microsoft.Maui.Hosting;
+using ReiskostenApp.Constants;
+using ReiskostenApp.Services;
+using System.IO;
 
-namespace ReiskostenApp;
-
-public static class MauiProgram
+namespace ReiskostenApp
 {
-    public static MauiApp CreateMauiApp()
+    public static class MauiProgram
     {
-        var builder = MauiApp.CreateBuilder();
+        public static MauiApp CreateMauiApp()
+        {
+            var builder = MauiApp.CreateBuilder();
 
-        builder
-            .UseMauiApp<App>()
-            .UseMauiCommunityToolkit()
-            .ConfigureFonts(fonts =>
-            {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-            });
+            builder
+                .UseMauiApp<App>()               // must be first
+                .ConfigureFonts(fonts => { /* fonts */ });
 
-        // -------------------------
-        //  Database pad
-        // -------------------------
-        string dbPath = Path.Combine(
-            FileSystem.AppDataDirectory,
-            "reiskosten.db3"
-        );
+            // CommunityToolkit after UseMauiApp
+            builder.UseMauiCommunityToolkit();
 
-        // -------------------------
-        //  Singletons
-        // -------------------------
-        builder.Services.AddSingleton(new AppRepository(dbPath));
-        builder.Services.AddSingleton<AppState>();
+            // Register DatabaseService singleton
+            var dbPath = Path.Combine(FileSystem.AppDataDirectory, DbConstants.DatabaseFilename);
+            builder.Services.AddSingleton(new DatabaseService(dbPath));
 
-        // -------------------------
-        //  ViewModels
-        // -------------------------
-        builder.Services.AddTransient<MonthViewModel>();
-        builder.Services.AddTransient<MonthTotalViewModel>();
-        builder.Services.AddTransient<NotesViewModel>();
-        //builder.Services.AddTransient<SettingsViewModel>();
+            // Register Views (Pages) so DI can inject DatabaseService
+            builder.Services.AddTransient<ReiskostenApp.Views.MonthPage>();
+            builder.Services.AddTransient<ReiskostenApp.Views.TotalsPage>();
+            builder.Services.AddTransient<ReiskostenApp.Views.NotesPage>();
+            builder.Services.AddTransient<ReiskostenApp.Views.SettingsPage>();
 
-        // -------------------------
-        //  Pages
-        // -------------------------
-        builder.Services.AddTransient<MonthPage>();
-        builder.Services.AddTransient<TotalsPage>();
-        builder.Services.AddTransient<NotesPage>();
-        builder.Services.AddTransient<SettingsPage>();
-
-        return builder.Build();
+            return builder.Build();
+        }
     }
 }

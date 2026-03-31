@@ -1,21 +1,15 @@
-using ReiskostenApp.ViewModels;
-using ReiskostenApp.Views;
+using Microsoft.Maui.Controls;
+using ReiskostenApp.Services;
 
 namespace ReiskostenApp.Views;
 
 public partial class NotesPage : ContentPage
 {
-    private NotesViewModel Vm => (NotesViewModel)BindingContext;
+    private readonly DatabaseService _db;
 
-    public NotesPage(NotesViewModel vm)
+    public NotesPage(DatabaseService db)
     {
         InitializeComponent();
-        BindingContext = vm;
-    }
-
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-        await Vm.LoadNotes();
+        _db = db;
     }
 }

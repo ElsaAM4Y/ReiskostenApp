@@ -1,22 +1,31 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
-    x:Class="ReiskostenApp.Views.TotalsPage"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    BackgroundColor="{DynamicResource PageBackgroundColor}">
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ReiskostenApp.Views.TotalsPage"
+             Title="Totals"
+             BackgroundColor="{DynamicResource BackgroundColor}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="LabelPrimary" TargetType="Label">
+                <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-    <VerticalStackLayout Padding="16" Spacing="12">
-
-        <Label 
-            Text="Totalen"
-            FontSize="22"
-            FontAttributes="Bold"
-            TextColor="{DynamicResource TextColor}" />
-
-        <!-- Later vullen met echte totalen -->
-        <Label 
-            Text="Hier komen de totalen"
-            TextColor="{DynamicResource TextColor}" />
-
+    <VerticalStackLayout Padding="12">
+        <CollectionView x:Name="MetaCollection">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="8" ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding YearMonth}" FontAttributes="Bold" Style="{StaticResource LabelPrimary}"/>
+                            <Label Text="{Binding Summary}" Style="{StaticResource LabelPrimary}"/>
+                        </VerticalStackLayout>
+                        <Label Text="{Binding TotalAmount}" VerticalOptions="Center" HorizontalOptions="End" Style="{StaticResource LabelPrimary}"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </VerticalStackLayout>
 </ContentPage>

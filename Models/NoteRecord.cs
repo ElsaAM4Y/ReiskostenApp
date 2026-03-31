@@ -1,13 +1,25 @@
 ﻿using SQLite;
+using System;
 
-namespace ReiskostenApp.Models;
-
-public class NoteRecord
+namespace ReiskostenApp.Models
 {
-    [PrimaryKey, AutoIncrement]
-    public int Id { get; set; }
+    [Table("NoteRecord")]
+    public class NoteRecord
+    {
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
 
-    public string Text { get; set; } = string.Empty;
-    public DateTime Created { get; set; } = DateTime.Now;
-    public DateTime Updated { get; set; } = DateTime.Now;
+        public string Title { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
+
+        // Provide both names so older code and new code compile
+        public DateTime Created { get; set; } = DateTime.UtcNow;
+        public DateTime Updated { get; set; } = DateTime.UtcNow;
+
+        // Optional clearer aliases (not mapped)
+        [Ignore]
+        public DateTime CreatedAt { get => Created; set => Created = value; }
+        [Ignore]
+        public DateTime UpdatedAt { get => Updated; set => Updated = value; }
+    }
 }
