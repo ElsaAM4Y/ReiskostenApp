@@ -6,8 +6,8 @@ namespace ReiskostenApp.ViewModels;
 
 public class MonthViewModel : INotifyPropertyChanged
 {
-    public ObservableCollection<DayEntry> Days { get; set; }
-        = new ObservableCollection<DayEntry>();
+    public ObservableCollection<DayRecord> Days { get; set; }
+        = new ObservableCollection<DayRecord>();
 
     public string Title => DateTime.Now.ToString("MMMM yyyy");
 
@@ -33,7 +33,7 @@ public class MonthViewModel : INotifyPropertyChanged
 
         for (int day = 1; day <= daysInMonth; day++)
         {
-            Days.Add(new DayEntry
+            Days.Add(new DayRecord
             {
                 Date = new DateTime(year, month, day),
                 Value = 0,

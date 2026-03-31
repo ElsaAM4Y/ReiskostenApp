@@ -63,7 +63,7 @@ public partial class MonthTotalViewModel : ObservableObject
 
     private async Task SaveAsync()
     {
-        var meta = new MonthMeta
+        var meta = new MonthMetaRecord
         {
             Year = Year,
             Month = Month,
