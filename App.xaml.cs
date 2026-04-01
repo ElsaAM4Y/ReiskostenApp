@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Maui.Controls;
 using ReiskostenApp.Services;
 
@@ -7,6 +8,10 @@ namespace ReiskostenApp
     public partial class App : Application
     {
         private readonly DatabaseService _db;
+
+        // Paths must match exactly the Source strings used in App.xaml
+        private const string LightThemePath = "Resources/Styles.Light.xaml";
+        private const string DarkThemePath = "Resources/Styles.Dark.xaml";
 
         public App(DatabaseService db)
         {
@@ -36,27 +41,48 @@ namespace ReiskostenApp
             }
         }
 
+        /// <summary>
+        /// Swap the theme resource dictionary to Light or Dark.
+        /// Accepts "Light", "Dark", or "System".
+        /// </summary>
         public void ApplyThemeResources(string theme)
         {
-            var isDark = string.Equals(theme, "Dark", StringComparison.OrdinalIgnoreCase);
-
-            var primaryKey = isDark ? "DarkPrimary" : "LightPrimary";
-            var backgroundKey = isDark ? "DarkBackground" : "LightBackground";
-            var textKey = isDark ? "DarkText" : "LightText";
-            var entryBgKey = isDark ? "DarkEntryBackground" : "LightEntryBackground";
-
             if (Current?.Resources == null) return;
 
-            if (Current.Resources.ContainsKey(primaryKey)
-                && Current.Resources.ContainsKey(backgroundKey)
-                && Current.Resources.ContainsKey(textKey)
-                && Current.Resources.ContainsKey(entryBgKey))
+            var requested = string.IsNullOrWhiteSpace(theme) ? "System" : theme;
+            if (string.Equals(requested, "System", StringComparison.OrdinalIgnoreCase))
             {
-                Current.Resources["PrimaryColor"] = Current.Resources[primaryKey];
-                Current.Resources["BackgroundColor"] = Current.Resources[backgroundKey];
-                Current.Resources["TextColor"] = Current.Resources[textKey];
-                Current.Resources["EntryBackgroundColor"] = Current.Resources[entryBgKey];
+                var app = Application.Current;
+                var requestedThemeString = app != null ? app.RequestedTheme.ToString() : "Light";
+                requested = string.Equals(requestedThemeString, "Dark", StringComparison.OrdinalIgnoreCase) ? "Dark" : "Light";
+            }
+
+            var desiredPath = string.Equals(requested, "Dark", StringComparison.OrdinalIgnoreCase)
+                ? "Resources/Styles.Dark.xaml"
+                : "Resources/Styles.Light.xaml";
+
+            var merged = Current.Resources.MergedDictionaries;
+            if (merged == null) return;
+
+            var existing = merged.FirstOrDefault(d =>
+                d?.Source != null &&
+                (string.Equals(d.Source.OriginalString, "Resources/Styles.Light.xaml", StringComparison.OrdinalIgnoreCase)
+                 || string.Equals(d.Source.OriginalString, "Resources/Styles.Dark.xaml", StringComparison.OrdinalIgnoreCase)));
+
+            if (existing != null && string.Equals(existing.Source?.OriginalString, desiredPath, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            try
+            {
+                var newDict = new ResourceDictionary { Source = new Uri(desiredPath, UriKind.Relative) };
+                if (existing != null) merged.Remove(existing);
+                merged.Add(newDict);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load theme resource '{desiredPath}': {ex}");
             }
         }
+
     }
 }

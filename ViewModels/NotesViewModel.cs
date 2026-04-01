@@ -1,8 +1,6 @@
-﻿// ViewModels/NotesViewModel.cs
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
@@ -14,14 +12,13 @@ namespace ReiskostenApp.ViewModels
     public class NotesViewModel : INotifyPropertyChanged
     {
         private readonly DatabaseService _db;
-        private bool _isBusy;
-        private NoteRecord? _selectedNote;
+        private NoteRecord? _selected;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public ObservableCollection<NoteRecord> Notes { get; } = new();
 
-        public ICommand LoadCommand { get; }
+        public ICommand RefreshCommand { get; }
         public ICommand AddCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand DeleteCommand { get; }
@@ -29,101 +26,57 @@ namespace ReiskostenApp.ViewModels
         public NotesViewModel(DatabaseService db)
         {
             _db = db ?? throw new ArgumentNullException(nameof(db));
-
-            LoadCommand = new Command(async () => await LoadAsync());
-            AddCommand = new Command(async () => await AddNoteAsync());
-            SaveCommand = new Command<NoteRecord>(async n => await SaveNoteAsync(n));
-            DeleteCommand = new Command<NoteRecord>(async n => await DeleteNoteAsync(n));
+            RefreshCommand = new Command(async () => await LoadAsync());
+            AddCommand = new Command(async () => await AddAsync());
+            SaveCommand = new Command(async () => await SaveAsync());
+            DeleteCommand = new Command(async () => await DeleteAsync());
         }
 
-        public bool IsBusy
+        public NoteRecord? Selected
         {
-            get => _isBusy;
-            private set { if (_isBusy == value) return; _isBusy = value; OnPropertyChanged(); }
+            get => _selected;
+            set
+            {
+                if (_selected == value) return;
+                _selected = value;
+                OnPropertyChanged(nameof(Selected));
+            }
         }
 
-        public NoteRecord? SelectedNote
-        {
-            get => _selectedNote;
-            set { if (_selectedNote == value) return; _selectedNote = value; OnPropertyChanged(); }
-        }
-
-        protected void OnPropertyChanged([CallerMemberName] string? name = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
-        /// <summary>
-        /// Loads notes from the database into the observable collection.
-        /// Safe to call multiple times.
-        /// </summary>
         public async Task LoadAsync()
         {
-            if (IsBusy) return;
-            try
-            {
-                IsBusy = true;
-                await _db.InitializeAsync(); // idempotent
-                var notes = await _db.GetNotesAsync();
-                Notes.Clear();
-                if (notes != null)
-                {
-                    foreach (var n in notes)
-                        Notes.Add(n);
-                }
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            await _db.InitializeAsync();
+            var notes = await _db.GetNotesAsync();
+            Notes.Clear();
+            foreach (var n in notes) Notes.Add(n);
         }
 
-        /// <summary>
-        /// Adds a new empty note and selects it.
-        /// </summary>
-        public async Task AddNoteAsync()
+        public async Task AddAsync()
         {
-            var note = new NoteRecord
-            {
-                Title = "New note",
-                Content = string.Empty,
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow
-            };
-
+            var now = DateTime.UtcNow;
+            var note = new NoteRecord { Title = "New note", Content = string.Empty, Created = now, Updated = now };
             await _db.SaveNoteAsync(note);
             Notes.Insert(0, note);
-            SelectedNote = note;
+            Selected = note;
         }
 
-        /// <summary>
-        /// Saves changes to an existing or new note.
-        /// </summary>
-        public async Task SaveNoteAsync(NoteRecord? note)
+        public async Task SaveAsync()
         {
-            if (note == null) return;
-            note.Updated = DateTime.UtcNow;
-            await _db.SaveNoteAsync(note);
-
-            // Refresh collection item (ensure latest values)
-            var idx = Notes.IndexOf(note);
-            if (idx >= 0)
-            {
-                Notes[idx] = note;
-            }
-            else
-            {
-                Notes.Insert(0, note);
-            }
+            if (Selected == null) return;
+            Selected.Updated = DateTime.UtcNow;
+            await _db.SaveNoteAsync(Selected);
+            await LoadAsync();
         }
 
-        /// <summary>
-        /// Deletes the provided note from the database and collection.
-        /// </summary>
-        public async Task DeleteNoteAsync(NoteRecord? note)
+        public async Task DeleteAsync()
         {
-            if (note == null) return;
-            await _db.DeleteNoteAsync(note);
-            if (Notes.Contains(note)) Notes.Remove(note);
-            if (SelectedNote == note) SelectedNote = null;
+            if (Selected == null) return;
+            await _db.DeleteNoteAsync(Selected);
+            Notes.Remove(Selected);
+            Selected = null;
         }
+
+        protected void OnPropertyChanged(string name) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

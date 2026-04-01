@@ -1,97 +1,135 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Microsoft.Maui.Controls;
 using ReiskostenApp.Models;
 using ReiskostenApp.Services;
 
 namespace ReiskostenApp.ViewModels
 {
-    public partial class MonthTotalViewModel : INotifyPropertyChanged
+    public class MonthTotalViewModel : INotifyPropertyChanged
     {
         private readonly DatabaseService _db;
         private int _year;
         private int _month;
+        private decimal _ratePerDay;
         private int _totalDays;
         private decimal _totalAmount;
-        private decimal _ratePerDay;
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public ObservableCollection<DayRecord> Days { get; } = new();
+
+        public ICommand SaveCommand { get; }
+        public ICommand RefreshCommand { get; }
 
         public MonthTotalViewModel(DatabaseService db)
         {
             _db = db ?? throw new ArgumentNullException(nameof(db));
+            SaveCommand = new Command(async () => await SaveAsync());
+            RefreshCommand = new Command(async () => await LoadAsync(_year, _month));
         }
 
         public int Year
         {
             get => _year;
-            set { if (_year == value) return; _year = value; OnPropertyChanged(); }
+            set
+            {
+                if (_year == value) return;
+                _year = value;
+                OnPropertyChanged(nameof(Year));
+            }
         }
 
         public int Month
         {
             get => _month;
-            set { if (_month == value) return; _month = value; OnPropertyChanged(); }
-        }
-
-        public int TotalDays
-        {
-            get => _totalDays;
-            private set { if (_totalDays == value) return; _totalDays = value; OnPropertyChanged(); }
-        }
-
-        public decimal TotalAmount
-        {
-            get => _totalAmount;
-            private set { if (_totalAmount == value) return; _totalAmount = value; OnPropertyChanged(); }
+            set
+            {
+                if (_month == value) return;
+                _month = value;
+                OnPropertyChanged(nameof(Month));
+            }
         }
 
         public decimal RatePerDay
         {
             get => _ratePerDay;
-            private set { if (_ratePerDay == value) return; _ratePerDay = value; OnPropertyChanged(); }
+            set
+            {
+                if (_ratePerDay == value) return;
+                _ratePerDay = value;
+                OnPropertyChanged(nameof(RatePerDay));
+            }
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string? name = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        public int TotalDays
+        {
+            get => _totalDays;
+            private set
+            {
+                if (_totalDays == value) return;
+                _totalDays = value;
+                OnPropertyChanged(nameof(TotalDays));
+            }
+        }
 
-        /// <summary>
-        /// Load totals for the given year/month and current rate from settings.
-        /// Safe to call multiple times; uses DatabaseService async APIs.
-        /// </summary>
+        public decimal TotalAmount
+        {
+            get => _totalAmount;
+            private set
+            {
+                if (_totalAmount == value) return;
+                _totalAmount = value;
+                OnPropertyChanged(nameof(TotalAmount));
+            }
+        }
+
         public async Task LoadAsync(int year, int month)
         {
             Year = year;
             Month = month;
 
-            // Ensure DB is initialized (idempotent)
             await _db.InitializeAsync();
+            var records = await _db.GetDayRecordsForMonthAsync(year, month);
 
-            // Load settings to get the rate per day (fallback to 0)
-            var settings = await _db.GetSettingsAsync() ?? new AppSettings();
-            RatePerDay = settings.RatePerDay;
+            Days.Clear();
+            foreach (var r in records.OrderBy(r => r.Date))
+                Days.Add(r);
 
-            // Try to read stored month meta first
-            var meta = await _db.GetMonthMetaAsync(year, month);
+            await UpdateTotalsAsync();
+        }
+
+        public async Task SaveAsync()
+        {
+            foreach (var r in Days)
+            {
+                // Ensure date normalized and amount recalculated by service
+                await _db.SaveDayRecordAsync(r, RatePerDay);
+            }
+
+            await UpdateTotalsAsync();
+        }
+
+        private async Task UpdateTotalsAsync()
+        {
+            var meta = await _db.GetMonthMetaAsync(Year, Month);
             if (meta != null)
             {
                 TotalDays = meta.TotalDays;
                 TotalAmount = meta.TotalAmount;
-                // keep RatePerDay in sync with stored meta if present
-                if (meta.RatePerDay > 0) RatePerDay = meta.RatePerDay;
-                return;
             }
-
-            // If no meta row exists, compute from day records
-            var days = await _db.GetDayRecordsForMonthAsync(year, month);
-            TotalDays = 0;
-            TotalAmount = 0m;
-            foreach (var d in days)
+            else
             {
-                TotalDays += d.Value;
-                TotalAmount += d.Amount;
+                TotalDays = Days.Sum(d => d.Value);
+                TotalAmount = Days.Sum(d => d.Amount);
             }
         }
+
+        protected void OnPropertyChanged(string name) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

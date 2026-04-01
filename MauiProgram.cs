@@ -3,6 +3,7 @@ using CommunityToolkit.Maui;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
+using ReiskostenApp.ViewModels;
 using ReiskostenApp.Services;
 using System.IO;
 

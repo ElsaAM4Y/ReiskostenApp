@@ -48,6 +48,7 @@ namespace ReiskostenApp.Views
 
             await _db.SaveSettingsAsync(_settings);
 
+            // Apply theme using the App method so resource dictionaries are swapped
             if (Application.Current is App app)
             {
                 app.ApplyThemeResources(_settings.SelectedTheme);

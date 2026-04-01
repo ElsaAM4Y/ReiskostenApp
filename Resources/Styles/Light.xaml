@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Color keys used by pages via DynamicResource -->
+    <Color x:Key="PrimaryColor">#2196F3</Color>
+    <Color x:Key="BackgroundColor">#FFFFFF</Color>
+    <Color x:Key="TextColor">#000000</Color>
+    <Color x:Key="EntryBackgroundColor">#F2F2F2</Color>
+
+    <!-- Example control style that references the color keys -->
+    <Style TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+    </Style>
+
+</ResourceDictionary>
