@@ -24,6 +24,7 @@ namespace ReiskostenApp.Views
             base.OnAppearing();
             await _db.InitializeAsync();
             _settings = await _db.GetSettingsAsync() ?? new AppSettings();
+
             ThemePicker.ItemsSource = new[] { "System", "Light", "Dark" };
             ThemePicker.SelectedItem = string.IsNullOrWhiteSpace(_settings.SelectedTheme) ? "System" : _settings.SelectedTheme;
             RateEntry.Text = _settings.RatePerDay.ToString(CultureInfo.InvariantCulture);
@@ -47,7 +48,6 @@ namespace ReiskostenApp.Views
 
             await _db.SaveSettingsAsync(_settings);
 
-            // Apply theme resources if App exposes ApplyThemeResources
             if (Application.Current is App app)
             {
                 app.ApplyThemeResources(_settings.SelectedTheme);

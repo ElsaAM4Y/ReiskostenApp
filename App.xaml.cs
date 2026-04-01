@@ -1,11 +1,10 @@
-﻿// App.xaml.cs
-using System;
+﻿using System;
 using Microsoft.Maui.Controls;
 using ReiskostenApp.Services;
 
 namespace ReiskostenApp
 {
-    public partial class App : Microsoft.Maui.Controls.Application
+    public partial class App : Application
     {
         private readonly DatabaseService _db;
 
@@ -13,39 +12,28 @@ namespace ReiskostenApp
         {
             InitializeComponent();
             _db = db ?? throw new ArgumentNullException(nameof(db));
-
-            // Temporary loading page while DB initializes
-            MainPage = new NavigationPage(new ContentPage
-            {
-                Title = "Loading",
-                Content = new ActivityIndicator { IsRunning = true, VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.Center }
-            });
+            MainPage = new AppShell();
         }
 
-        // Expose repository for legacy code that expects App.Repository
         public DatabaseService Repository => _db;
 
         protected override async void OnStart()
         {
             base.OnStart();
 
-            await _db.InitializeAsync();
-
-            var settings = await _db.GetSettingsAsync() ?? new Models.AppSettings();
-            await _db.SaveSettingsAsync(settings);
-
-            // Apply theme resources (keeps System/Light/Dark behavior optional)
-            ApplyThemeResources(settings.SelectedTheme);
-
-            // Set start page via DI if available, otherwise construct manually
-            var monthPage = Microsoft.Maui.Controls.Application.Current?.Handler?.MauiContext?.Services?.GetService<Views.MonthPage>()
-                            ?? new Views.MonthPage(_db);
-
-            MainPage = new NavigationPage(monthPage)
+            try
             {
-                BarBackgroundColor = (Color)Current.Resources["PrimaryColor"],
-                BarTextColor = (Color)Current.Resources["TextColor"]
-            };
+                await _db.InitializeAsync();
+
+                var settings = await _db.GetSettingsAsync() ?? new Models.AppSettings();
+                await _db.SaveSettingsAsync(settings);
+
+                ApplyThemeResources(settings.SelectedTheme);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"App OnStart error: {ex}");
+            }
         }
 
         public void ApplyThemeResources(string theme)
@@ -56,6 +44,8 @@ namespace ReiskostenApp
             var backgroundKey = isDark ? "DarkBackground" : "LightBackground";
             var textKey = isDark ? "DarkText" : "LightText";
             var entryBgKey = isDark ? "DarkEntryBackground" : "LightEntryBackground";
+
+            if (Current?.Resources == null) return;
 
             if (Current.Resources.ContainsKey(primaryKey)
                 && Current.Resources.ContainsKey(backgroundKey)
