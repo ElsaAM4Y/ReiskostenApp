@@ -5,11 +5,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- Common styles (controls, fonts, sizes) -->
-                <ResourceDictionary Source="Resources/Styles.Common.xaml" />
-
-                <!-- Default theme: load Light by default; SettingsPage will swap to Dark when requested -->
-                <ResourceDictionary Source="Resources/Styles.Light.xaml" />
+                <ResourceDictionary Source="/Resources/Styles/Styles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Light.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

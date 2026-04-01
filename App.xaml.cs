@@ -1,26 +1,25 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Maui.Controls;
-using ReiskostenApp.Services;
 
 namespace ReiskostenApp
 {
     public partial class App : Application
     {
-        private readonly DatabaseService _db;
+        private readonly Services.DatabaseService _db;
 
         // Paths must match exactly the Source strings used in App.xaml
-        private const string LightThemePath = "Resources/Styles.Light.xaml";
-        private const string DarkThemePath = "Resources/Styles.Dark.xaml";
+        private const string LightThemePath = "Resources/Styles/Light.xaml";
+        private const string DarkThemePath = "Resources/Styles/Dark.xaml";
 
-        public App(DatabaseService db)
+        public App(Services.DatabaseService db)
         {
             InitializeComponent();
             _db = db ?? throw new ArgumentNullException(nameof(db));
             MainPage = new AppShell();
         }
 
-        public DatabaseService Repository => _db;
+        public Services.DatabaseService Repository => _db;
 
         protected override async void OnStart()
         {
@@ -44,12 +43,34 @@ namespace ReiskostenApp
         /// <summary>
         /// Swap the theme resource dictionary to Light or Dark.
         /// Accepts "Light", "Dark", or "System".
+        /// If "Common" is used in your UI as the neutral option, treat it the same as removing theme overrides.
         /// </summary>
         public void ApplyThemeResources(string theme)
         {
             if (Current?.Resources == null) return;
 
-            var requested = string.IsNullOrWhiteSpace(theme) ? "System" : theme;
+            var requested = string.IsNullOrWhiteSpace(theme) ? "System" : theme.Trim();
+
+            // Accept "Common" as neutral (no theme override)
+            if (string.Equals(requested, "Common", StringComparison.OrdinalIgnoreCase))
+            {
+                // Remove any existing theme dictionaries and leave only shared styles
+                Application.Current?.Dispatcher?.Dispatch(() =>
+                {
+                    var merged = Current.Resources.MergedDictionaries;
+                    if (merged == null) return;
+
+                    var existing = merged.FirstOrDefault(d =>
+                        d?.Source != null &&
+                        (string.Equals(d.Source.OriginalString, LightThemePath, StringComparison.OrdinalIgnoreCase)
+                         || string.Equals(d.Source.OriginalString, DarkThemePath, StringComparison.OrdinalIgnoreCase)));
+
+                    if (existing != null) merged.Remove(existing);
+                });
+
+                return;
+            }
+
             if (string.Equals(requested, "System", StringComparison.OrdinalIgnoreCase))
             {
                 var app = Application.Current;
@@ -58,31 +79,39 @@ namespace ReiskostenApp
             }
 
             var desiredPath = string.Equals(requested, "Dark", StringComparison.OrdinalIgnoreCase)
-                ? "Resources/Styles.Dark.xaml"
-                : "Resources/Styles.Light.xaml";
+                ? DarkThemePath
+                : LightThemePath;
 
-            var merged = Current.Resources.MergedDictionaries;
-            if (merged == null) return;
-
-            var existing = merged.FirstOrDefault(d =>
-                d?.Source != null &&
-                (string.Equals(d.Source.OriginalString, "Resources/Styles.Light.xaml", StringComparison.OrdinalIgnoreCase)
-                 || string.Equals(d.Source.OriginalString, "Resources/Styles.Dark.xaml", StringComparison.OrdinalIgnoreCase)));
-
-            if (existing != null && string.Equals(existing.Source?.OriginalString, desiredPath, StringComparison.OrdinalIgnoreCase))
-                return;
-
-            try
+            // Use the app dispatcher to ensure UI-thread execution and correct window context
+            Application.Current?.Dispatcher?.Dispatch(() =>
             {
-                var newDict = new ResourceDictionary { Source = new Uri(desiredPath, UriKind.Relative) };
-                if (existing != null) merged.Remove(existing);
-                merged.Add(newDict);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Failed to load theme resource '{desiredPath}': {ex}");
-            }
+                var merged = Current.Resources.MergedDictionaries;
+                if (merged == null) return;
+
+                // Find any existing theme dictionary (Light or Dark)
+                var existing = merged.FirstOrDefault(d =>
+                    d?.Source != null &&
+                    (string.Equals(d.Source.OriginalString, LightThemePath, StringComparison.OrdinalIgnoreCase)
+                     || string.Equals(d.Source.OriginalString, DarkThemePath, StringComparison.OrdinalIgnoreCase)));
+
+                // If desired already loaded, nothing to do
+                if (existing != null && string.Equals(existing.Source?.OriginalString, desiredPath, StringComparison.OrdinalIgnoreCase))
+                    return;
+
+                try
+                {
+                    var newDict = new ResourceDictionary { Source = new Uri(desiredPath, UriKind.Relative) };
+
+                    if (existing != null) merged.Remove(existing);
+
+                    // Add new theme dictionary after shared Styles.xaml (assumes shared Styles.xaml is already present)
+                    merged.Add(newDict);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to load theme resource '{desiredPath}': {ex}");
+                }
+            });
         }
-
     }
 }

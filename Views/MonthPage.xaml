@@ -4,6 +4,7 @@
              x:Class="ReiskostenApp.Views.MonthPage"
              Title="Month"
              BackgroundColor="{DynamicResource BackgroundColor}">
+    <ScrollView>
     <StackLayout Padding="12" Spacing="10">
         <StackLayout Orientation="Horizontal" Spacing="8">
             <Picker x:Name="MonthPicker" WidthRequest="180" />
@@ -28,4 +29,5 @@
 
         <Label x:Name="MonthTotalLabel" Text="Totals" TextColor="{DynamicResource TextColor}" HorizontalOptions="Center" />
     </StackLayout>
+    </ScrollView>
 </ContentPage>
