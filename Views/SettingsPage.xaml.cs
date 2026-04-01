@@ -27,8 +27,8 @@ namespace ReiskostenApp.Views
             _settings = await _db.GetSettingsAsync() ?? new AppSettings();
 
             // Use exact strings the app expects
-            ThemePicker.ItemsSource = new[] { "System", "Light", "Dark" };
-            ThemePicker.SelectedItem = string.IsNullOrWhiteSpace(_settings.SelectedTheme) ? "System" : _settings.SelectedTheme;
+            ThemePicker.ItemsSource = new[] { "Common", "Light", "Dark" };
+            ThemePicker.SelectedItem = string.IsNullOrWhiteSpace(_settings.SelectedTheme) ? "Common" : _settings.SelectedTheme;
 
             RateEntry.Text = _settings.RatePerDay.ToString(CultureInfo.InvariantCulture);
             MonthPicker.SelectedIndex = Math.Clamp((_settings.SelectedMonth == 0 ? DateTime.Now.Month : _settings.SelectedMonth) - 1, 0, 11);
@@ -45,11 +45,11 @@ namespace ReiskostenApp.Views
         private async void OnSaveClicked(object sender, EventArgs e)
         {
             // Normalize selected theme string
-            var selected = ThemePicker.SelectedItem?.ToString()?.Trim() ?? "System";
-            if (string.Equals(selected, "common", StringComparison.OrdinalIgnoreCase)) selected = "System";
+            var selected = ThemePicker.SelectedItem?.ToString()?.Trim() ?? "Common";
+            if (string.Equals(selected, "common", StringComparison.OrdinalIgnoreCase)) selected = "Common";
             else if (string.Equals(selected, "dark", StringComparison.OrdinalIgnoreCase)) selected = "Dark";
             else if (string.Equals(selected, "light", StringComparison.OrdinalIgnoreCase)) selected = "Light";
-            else selected = "System";
+            else selected = "Common";
 
             _settings.SelectedTheme = selected;
 

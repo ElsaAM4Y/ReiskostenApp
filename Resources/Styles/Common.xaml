@@ -20,4 +20,7 @@
         <Setter Property="HeightRequest" Value="40" />
     </Style>
 
+    <Color x:Key="OnColor">LightGreen</Color>
+    <Color x:Key="ThumbColor">#ACACAC</Color>
+
 </ResourceDictionary>

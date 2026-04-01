@@ -18,7 +18,7 @@ namespace ReiskostenApp.ViewModels
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public ICommand SaveCommand { get; }
-        public string[] ThemeOptions { get; } = new[] { "System", "Light", "Dark" };
+        public string[] ThemeOptions { get; } = new[] { "Common", "Light", "Dark" };
 
         public SettingsViewModel(DatabaseService db)
         {
@@ -28,7 +28,7 @@ namespace ReiskostenApp.ViewModels
 
         public string SelectedTheme
         {
-            get => _settings.SelectedTheme ?? "System";
+            get => _settings.SelectedTheme ?? "Common";
             set
             {
                 if (_settings.SelectedTheme == value) return;

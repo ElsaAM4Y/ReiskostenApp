@@ -2,15 +2,39 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <!-- Same keys as Light but dark values -->
-    <Color x:Key="PrimaryColor">#90CAF9</Color>
-    <Color x:Key="BackgroundColor">#121212</Color>
-    <Color x:Key="TextColor">#FFFFFF</Color>
-    <Color x:Key="EntryBackgroundColor">#1E1E1E</Color>
+    <Color x:Key="TabBarBackgroundColor">#000000</Color>
+    <Color x:Key="TabBarUnselectedColor">#ACACAC</Color>
+    <Color x:Key="TabBarTitleColor">#ffffff</Color>
 
-    <Style TargetType="Button">
-        <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryColor}" />
-        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
-    </Style>
+    <!-- Backgrounds -->
+    <Color x:Key="PageBackgroundColor">#121212</Color>
+    <Color x:Key="CardBackgroundColor">#1E1E1E</Color>
+    <Color x:Key="EntryBackgroundColor">#ACACAC</Color>
 
+    <!-- Text -->
+    <Color x:Key="PrimaryTextColor">#FFFFFF</Color>
+    <Color x:Key="SecondaryTextColor">#CCCCCC</Color>
+
+    <!-- Buttons -->
+    <Color x:Key="ButtonBackgroundColor">#3A7BFF</Color>
+    <Color x:Key="ButtonTextColor">#FFFFFF</Color>
+    <Color x:Key="AccentColor">#3B82F6</Color>
+
+    <!-- Arrows -->
+    <Color x:Key="ArrowColor">#FFFFFF</Color>
+
+    <!-- Table rows -->
+    <Color x:Key="TableRowEvenColor">#1E1E1E</Color>
+    <Color x:Key="TableRowOddColor">#2A2A2A</Color>
+    <Color x:Key="TableRowTextColor">#FFFFFF</Color>
+
+    <!-- Borders -->
+    <Color x:Key="BorderColor">#CCCCCC</Color>
+
+    <!-- Loading indicator -->
+    <Color x:Key="LoadingIndicatorColor">#FFFFFF</Color>
+    <Color x:Key="LoadingIndicatorBackground">#33FFFFFF</Color>
+
+    <Color x:Key="OnColor">LightGreen</Color>
+    <Color x:Key="ThumbColor">#ACACAC</Color>
 </ResourceDictionary>
