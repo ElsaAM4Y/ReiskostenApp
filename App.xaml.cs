@@ -17,7 +17,11 @@ namespace ReiskostenApp
             InitializeComponent();
             _db = db ?? throw new ArgumentNullException(nameof(db));
             _services = services;
-            ApplyThemeResources("Light"); // default until OnStart loads saved setting
+
+            // Load saved theme synchronously before MainPage is set so pages render with correct colors
+            var settings = _db.GetSettingsAsync().GetAwaiter().GetResult();
+            ApplyThemeResources(settings?.SelectedTheme ?? "Light");
+
             MainPage = _services.GetRequiredService<AppShell>();
         }
 
@@ -26,15 +30,11 @@ namespace ReiskostenApp
         protected override async void OnStart()
         {
             base.OnStart();
-
             try
             {
                 await _db.InitializeAsync();
-
                 var settings = await _db.GetSettingsAsync() ?? new Models.AppSettings();
                 await _db.SaveSettingsAsync(settings);
-
-                ApplyThemeResources(settings.SelectedTheme);
             }
             catch (Exception ex)
             {

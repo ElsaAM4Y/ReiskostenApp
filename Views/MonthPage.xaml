@@ -6,26 +6,30 @@
              BackgroundColor="{DynamicResource PageBackgroundColor}">
     <ScrollView Margin="0,0,0,15">
     <StackLayout Padding="12" Spacing="10">
-        <StackLayout Orientation="Horizontal" Spacing="8">
-            <Picker x:Name="MonthPicker" WidthRequest="180" TextColor="{DynamicResource PrimaryTextColor}" />
-            <Picker x:Name="YearPicker" WidthRequest="120" TextColor="{DynamicResource PrimaryTextColor}" />
-            <Button Text="Save" Clicked="OnSaveClicked" />
+        <StackLayout Orientation="Horizontal" Spacing="8" HeightRequest="50">
+            <Picker x:Name="MonthPicker" WidthRequest="150" HeightRequest="50" VerticalOptions="Center" TextColor="{DynamicResource PrimaryTextColor}" />
+            <Picker x:Name="YearPicker" WidthRequest="70" HeightRequest="50" VerticalOptions="Center" TextColor="{DynamicResource PrimaryTextColor}" />
+            <Button Text="Opslaan" Clicked="OnSaveClicked" HeightRequest="50" VerticalOptions="Center" HorizontalOptions="FillAndExpand" />
         </StackLayout>
 
         <CollectionView x:Name="DaysCollection" ItemsSource="{Binding Days}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Padding="4" ColumnDefinitions="40,80,*" ColumnSpacing="8">
+                    <Grid Padding="4" ColumnDefinitions="40,80,*" ColumnSpacing="8" MinimumHeightRequest="52">
                         <Label Text="{Binding Day}"
                                VerticalOptions="Center"
                                TextColor="{DynamicResource PrimaryTextColor}" />
                         <Entry Grid.Column="1"
                                Text="{Binding Value, Mode=TwoWay}"
                                Keyboard="Numeric"
+                               VerticalOptions="Center"
+                               MinimumHeightRequest="48"
                                BackgroundColor="{DynamicResource EntryBackgroundColor}"
                                TextColor="{DynamicResource PrimaryTextColor}" />
                         <Entry Grid.Column="2"
                                Text="{Binding Notes, Mode=TwoWay}"
+                               VerticalOptions="Center"
+                               MinimumHeightRequest="48"
                                BackgroundColor="{DynamicResource EntryBackgroundColor}"
                                TextColor="{DynamicResource PrimaryTextColor}" />
                     </Grid>

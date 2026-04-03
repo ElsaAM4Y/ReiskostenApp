@@ -27,27 +27,30 @@
                    Keyboard="Numeric"
                    Placeholder="0.00"
                    Text="{Binding RatePerDay, Mode=TwoWay}"
+                   MinimumHeightRequest="48"
                    BackgroundColor="{DynamicResource EntryBackgroundColor}"
                    TextColor="{DynamicResource PrimaryTextColor}" />
 
-            <Label Text="Month"
+            <Label Text="Maand"
                    FontAttributes="Bold"
                    TextColor="{DynamicResource PrimaryTextColor}" />
 
             <Picker x:Name="MonthPicker"
-                    Title="Select month"
+                    Title="Selecteer maand"
                     ItemsSource="{Binding MonthNames}"
                     SelectedIndex="{Binding SelectedMonthIndex, Mode=TwoWay}"
+                    MinimumHeightRequest="48"
                     TextColor="{DynamicResource PrimaryTextColor}" />
 
-            <Label Text="Year"
+            <Label Text="Jaar"
                    FontAttributes="Bold"
                    TextColor="{DynamicResource PrimaryTextColor}" />
 
             <Picker x:Name="YearPicker"
-                    Title="Select year"
+                    Title="Selecteer jaar"
                     ItemsSource="{Binding Years}"
                     SelectedItem="{Binding SelectedYear, Mode=TwoWay}"
+                    MinimumHeightRequest="48"
                     TextColor="{DynamicResource PrimaryTextColor}" />
 
             <Button Text="Save"

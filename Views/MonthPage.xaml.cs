@@ -28,6 +28,7 @@ namespace ReiskostenApp.Views
             _db = db ?? throw new ArgumentNullException(nameof(db));
             BindingContext = this;
             LoadPickers();
+            ApplyPickerTheme();
         }
 
         protected override async void OnAppearing()
@@ -48,11 +49,12 @@ namespace ReiskostenApp.Views
 
         void ApplyPickerTheme()
         {
-            if (Application.Current?.Resources.TryGetValue("EntryBackgroundColor", out var val) == true && val is Color color)
-            {
-                MonthPicker.BackgroundColor = color;
-                YearPicker.BackgroundColor = color;
-            }
+            var color = Application.Current?.Resources.TryGetValue("EntryBackgroundColor", out var val) == true && val is Color c
+                ? c
+                : Color.FromArgb("#536878");
+
+            MonthPicker.BackgroundColor = color;
+            YearPicker.BackgroundColor = color;
         }
 
         private async Task EnsureInitializedAsync()

@@ -27,7 +27,7 @@
         <CollectionView.ItemTemplate>
             <DataTemplate>
                 <Border Style="{StaticResource MainBorderStyle}" Margin="0,4">
-                    <Grid ColumnDefinitions="*,80,120" Padding="4">
+                    <Grid ColumnDefinitions="*,80,120" Padding="4" MinimumHeightRequest="64">
 
                         <StackLayout VerticalOptions="Center">
                             <Label Text="{Binding MonthName}"
