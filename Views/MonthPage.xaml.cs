@@ -150,7 +150,7 @@ namespace ReiskostenApp.Views
         {
             var meta = await _db.GetMonthMetaAsync(_year, _month);
             if (meta != null)
-                MonthTotalLabel.Text = $"Aantal keren gewerkt: {meta.TotalDays}  Totaal: {meta.TotalAmount:C}";
+                MonthTotalLabel.Text = $"Aantal keren gewerkt: {meta.TotalDays} \nTotaal: {meta.TotalAmount:C}";
             else
                 MonthTotalLabel.Text = "Nog geen invoer";
         }

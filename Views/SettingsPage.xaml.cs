@@ -51,6 +51,7 @@ namespace ReiskostenApp.Views
             else
                 System.Diagnostics.Debug.WriteLine("[Settings] Application.Current is NOT App!");
 
+            ApplyPickerTheme();
             await DisplayAlert("Saved", $"Settings saved. Theme: {_vm.SelectedTheme}", "OK");
         }
     }

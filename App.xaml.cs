@@ -18,11 +18,24 @@ namespace ReiskostenApp
             _db = db ?? throw new ArgumentNullException(nameof(db));
             _services = services;
 
-            // Load saved theme synchronously before MainPage is set so pages render with correct colors
+            // Initialize DB and load saved theme before MainPage is set
+            _db.InitializeAsync().GetAwaiter().GetResult();
             var settings = _db.GetSettingsAsync().GetAwaiter().GetResult();
-            ApplyThemeResources(settings?.SelectedTheme ?? "Light");
+            if (settings == null)
+            {
+                settings = new Models.AppSettings();
+                _db.SaveSettingsAsync(settings).GetAwaiter().GetResult();
+            }
+            ApplyThemeResources(settings.SelectedTheme ?? "Light");
 
             MainPage = _services.GetRequiredService<AppShell>();
+
+            // Apply flyout theme after MainPage is set
+            //if (MainPage is AppShell shell &&
+            //    Current.Resources.TryGetValue("TabBarBackgroundColor", out var bg) && bg is Color bgColor &&
+            //    Current.Resources.TryGetValue("TabBarTitleColor", out var tc) && tc is Color titleColor &&
+            //    Current.Resources.TryGetValue("TabBarUnselectedColor", out var uc) && uc is Color unselectedColor)
+            //    shell.ApplyFlyoutTheme(bgColor, titleColor, unselectedColor);
         }
 
         public Services.DatabaseService Repository => _db;
@@ -57,12 +70,21 @@ namespace ReiskostenApp
                 _      => new Themes.Light()
             };
 
-            System.Diagnostics.Debug.WriteLine($"[App] Dict type: {dict.GetType().Name}, key count: {dict.Count}");
+            //System.Diagnostics.Debug.WriteLine($"[App] Dict type: {dict.GetType().Name}, key count: {dict.Count}");
 
-            foreach (var kvp in dict)
-                Current.Resources[kvp.Key] = kvp.Value;
+            //foreach (var kvp in dict)
+            //    Current.Resources[kvp.Key] = kvp.Value;
 
-            System.Diagnostics.Debug.WriteLine($"[App] Done applying theme keys.");
+            //if (MainPage is Shell shell &&
+            //    Current.Resources.TryGetValue("TabBarBackgroundColor", out var bg) && bg is Color bgColor &&
+            //  Current.Resources.TryGetValue("PrimaryTextColor", out var tc) && tc is Color titleColor) ;
+            //    Current.Resources.TryGetValue("TabBarUnselectedColor", out var uc) && uc is Color unselectedColor)
+            //{
+            //    if (shell is AppShell appShell)
+            //        appShell.ApplyFlyoutTheme(bgColor, titleColor, unselectedColor);
+            //}
+
+            //System.Diagnostics.Debug.WriteLine($"[App] Done applying theme keys.");
         }
     }
 }

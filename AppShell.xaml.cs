@@ -19,5 +19,20 @@ namespace ReiskostenApp
             Routing.RegisterRoute("NotesPage",    typeof(Views.NotesPage));
             Routing.RegisterRoute("SettingsPage", typeof(Views.SettingsPage));
         }
+
+        //public void ApplyFlyoutTheme(Color background, Color titleColor, Color unselectedColor)
+        //{
+        //    // Header
+        //    FlyoutHeaderGrid.BackgroundColor = background;
+        //    FlyoutTitle.TextColor = titleColor;
+        //    FlyoutSubtitle.TextColor = unselectedColor;
+
+        //    // Shell flyout
+        //    FlyoutBackgroundColor = background;
+        //    Shell.SetBackgroundColor(this, background);
+        //    Shell.SetForegroundColor(this, titleColor);
+        //    Shell.SetTitleColor(this, titleColor);
+        //    Shell.SetUnselectedColor(this, unselectedColor);
+        //}
     }
 }

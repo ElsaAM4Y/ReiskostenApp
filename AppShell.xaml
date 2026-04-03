@@ -3,14 +3,14 @@
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        xmlns:views="clr-namespace:ReiskostenApp.Views"
        x:Class="ReiskostenApp.AppShell"
-       FlyoutBehavior="Flyout"
        Shell.BackgroundColor="{DynamicResource TabBarBackgroundColor}"
-       Shell.ForegroundColor="{DynamicResource PrimaryTextColor}">
+       Shell.TitleColor="{DynamicResource PrimaryTextColor}"
+       FlyoutBehavior="Flyout">
 
     <Shell.FlyoutHeader>
-        <Grid Padding="16" BackgroundColor="{DynamicResource TabBarBackgroundColor}">
-            <Label Text="Reiskosten" FontAttributes="Bold" FontSize="18" TextColor="{DynamicResource PrimaryTextColor}" />
-            <Label Text="Elsa" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" VerticalOptions="End" />
+        <Grid x:Name="FlyoutHeaderGrid" Padding="16" RowDefinitions="Auto,Auto">
+            <Label x:Name="FlyoutTitle" Text="Reiskosten" FontAttributes="Bold" FontSize="18" />
+
         </Grid>
     </Shell.FlyoutHeader>
 

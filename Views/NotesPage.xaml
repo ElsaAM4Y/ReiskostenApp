@@ -7,7 +7,7 @@
     <ScrollView>
     <StackLayout Padding="12" Spacing="8">
         <StackLayout Padding="6">
-            <Entry x:Name="NoteTitle" Placeholder="Titel" MinimumHeightRequest="48" BackgroundColor="{DynamicResource EntryBackgroundColor}" TextColor="{DynamicResource PrimaryTextColor}" />
+            <Entry x:Name="NoteTitle" Placeholder="Titel" PlaceholderColor="{DynamicResource SecondaryTextColor}" MinimumHeightRequest="48" BackgroundColor="{DynamicResource EntryBackgroundColor}" TextColor="{DynamicResource PrimaryTextColor}" />
             <Editor x:Name="NoteContent" HeightRequest="120" MinimumHeightRequest="48" BackgroundColor="{DynamicResource EntryBackgroundColor}" TextColor="{DynamicResource PrimaryTextColor}" />
             <StackLayout Orientation="Horizontal" Spacing="8">
                 <Button Text="Nieuw" Clicked="OnAddClicked" MinimumHeightRequest="48" />

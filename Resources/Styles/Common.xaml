@@ -1,24 +1,40 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    x:Class="ReiskostenApp.Resources.Styles.Common">
 
-    <!-- Shared styles only (no color keys that differ per theme) -->
-    <Style TargetType="ContentPage">
-        <Setter Property="Padding" Value="12" />
-    </Style>
+    <Color x:Key="TabBarBackgroundColor">LightGray</Color>
+    <Color x:Key="TabBarUnselectedColor">#6E6E6E</Color>
+    <Color x:Key="TabBarTitleColor">#000000</Color>
 
-    <Style TargetType="Label">
-        <Setter Property="FontSize" Value="14" />
-    </Style>
+    <!-- Backgrounds -->
+    <Color x:Key="PageBackgroundColor">#FFFFFF</Color>
+    <Color x:Key="CardBackgroundColor">#F5F5F5</Color>
+    <Color x:Key="EntryBackgroundColor">#F5F5F5</Color>
 
-    <Style TargetType="Entry">
-        <Setter Property="HeightRequest" Value="40" />
-    </Style>
+    <!-- Text -->
+    <Color x:Key="PrimaryTextColor">#1A1A1A</Color>
+    <Color x:Key="SecondaryTextColor">#444444</Color>
 
-    <Style TargetType="Button">
-        <Setter Property="CornerRadius" Value="6" />
-        <Setter Property="HeightRequest" Value="40" />
-    </Style>
+    <!-- Buttons -->
+    <Color x:Key="ButtonBackgroundColor">#0078D4</Color>
+    <Color x:Key="ButtonTextColor">#FFFFFF</Color>
+    <Color x:Key="AccentColor">#2563EB</Color>
+
+    <!-- Arrows -->
+    <Color x:Key="ArrowColor">#1A1A1A</Color>
+
+    <!-- Table rows -->
+    <Color x:Key="TableRowEvenColor">#FFFFFF</Color>
+    <Color x:Key="TableRowOddColor">#F7F9FC</Color>
+    <Color x:Key="TableRowTextColor">#1A1A1A</Color>
+
+    <!-- Borders -->
+    <Color x:Key="BorderColor">#607D8B</Color>
+
+    <!-- Loading indicator -->
+    <Color x:Key="LoadingIndicatorColor">#0078D4</Color>
+    <Color x:Key="LoadingIndicatorBackground">#330078D4</Color>
 
     <Color x:Key="OnColor">LightGreen</Color>
     <Color x:Key="ThumbColor">#ACACAC</Color>
