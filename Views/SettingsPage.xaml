@@ -13,22 +13,13 @@
                    FontAttributes="Bold"
                    TextColor="{DynamicResource PrimaryTextColor}" />
 
-            <Picker x:Name="ThemePicker"
-                    Title="Kies een thema"
-                    SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
-                    TextColor="{DynamicResource PrimaryTextColor}"
-                    SelectedIndexChanged="ThemePicker_SelectedIndexChanged">
-                            <Picker.Items>
-                                <x:String>Light</x:String>
-                                <x:String>Dark</x:String>
-                            </Picker.Items>
-            </Picker>
 
-            <!--<Picker x:Name="ThemePicker"
+
+            <Picker x:Name="ThemePicker"
                     Title="Select theme"
                     ItemsSource="{Binding Themes}"
                     SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
-                    TextColor="{DynamicResource PrimaryTextColor}" />-->
+                    TextColor="{DynamicResource PrimaryTextColor}" />
 
             <Label Text="Rate per day"
                    FontAttributes="Bold"

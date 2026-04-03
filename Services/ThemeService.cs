@@ -30,18 +30,18 @@ namespace ReiskostenApp.Services
 
             merged.Add(newTheme);
 
-            // Update icon resource based on theme
-            switch (theme)
-            {
-                case "Dark":
-                    Application.Current.Resources["WebsiteIconSource"] =
-                        Application.Current.Resources["WebsiteIconSourceDark"];
-                    break;
+            //// Update icon resource based on theme
+            //switch (theme)
+            //{
+            //    case "Dark":
+            //        Application.Current.Resources["WebsiteIconSource"] =
+            //            Application.Current.Resources["WebsiteIconSourceDark"];
+            //        break;
 
-                default:
-                    Application.Current.Resources["WebsiteIconSource"] = "website.svg";
-                    break;
-            }
+            //    default:
+            //        Application.Current.Resources["WebsiteIconSource"] = "website.svg";
+            //        break;
+            //}
         }
 
         public static void LoadSavedTheme()

@@ -12,6 +12,7 @@ namespace ReiskostenApp.Views
         public SettingsPage(SettingsViewModel vm)
         {
             InitializeComponent();
+            _vm = vm;
             BindingContext = _vm;
         }
 

@@ -34,6 +34,7 @@ namespace ReiskostenApp.Views
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+
             await EnsureInitializedAsync();
 
             _year = _settings.SelectedYear == 0 ? DateTime.Now.Year : _settings.SelectedYear;
