@@ -1,15 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    x:Class="ReiskostenApp.Resources.Styles.Dark">
 
     <Color x:Key="TabBarBackgroundColor">#000000</Color>
-    <Color x:Key="TabBarUnselectedColor">#ACACAC</Color>
+    <Color x:Key="TabBarUnselectedColor">#777777</Color>
     <Color x:Key="TabBarTitleColor">#ffffff</Color>
 
     <!-- Backgrounds -->
     <Color x:Key="PageBackgroundColor">#121212</Color>
     <Color x:Key="CardBackgroundColor">#1E1E1E</Color>
-    <Color x:Key="EntryBackgroundColor">#ACACAC</Color>
+    <Color x:Key="EntryBackgroundColor">#536878</Color>
 
     <!-- Text -->
     <Color x:Key="PrimaryTextColor">#FFFFFF</Color>
@@ -36,5 +37,5 @@
     <Color x:Key="LoadingIndicatorBackground">#33FFFFFF</Color>
 
     <Color x:Key="OnColor">LightGreen</Color>
-    <Color x:Key="ThumbColor">#ACACAC</Color>
+    <Color x:Key="ThumbColor">#555555</Color>
 </ResourceDictionary>

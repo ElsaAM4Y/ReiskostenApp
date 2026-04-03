@@ -25,13 +25,11 @@ namespace ReiskostenApp.Views
             NotesCollection.ItemsSource = notes;
         }
 
-        private async void OnAddClicked(object sender, EventArgs e)
+        private void OnAddClicked(object sender, EventArgs e)
         {
-            var note = new NoteRecord { Title = "New note", Content = string.Empty, Created = DateTime.UtcNow, Updated = DateTime.UtcNow };
-            await _db.SaveNoteAsync(note);
-            var notes = await _db.GetNotesAsync();
-            NotesCollection.ItemsSource = notes;
-            SelectNote(note);
+            _selected = null;
+            NoteTitle.Text = string.Empty;
+            NoteContent.Text = string.Empty;
         }
 
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -52,10 +50,7 @@ namespace ReiskostenApp.Views
         private async void OnSaveClicked(object sender, EventArgs e)
         {
             if (_selected == null)
-            {
-                await DisplayAlert("No note", "Select or add a note first.", "OK");
-                return;
-            }
+                _selected = new NoteRecord { Created = DateTime.UtcNow };
 
             _selected.Title = NoteTitle.Text ?? string.Empty;
             _selected.Content = NoteContent.Text ?? string.Empty;
@@ -64,7 +59,8 @@ namespace ReiskostenApp.Views
             await _db.SaveNoteAsync(_selected);
             var notes = await _db.GetNotesAsync();
             NotesCollection.ItemsSource = notes;
-            await DisplayAlert("Saved", "Note saved.", "OK");
+            // _selected already has the updated Id after SaveNoteAsync
+            await DisplayAlert("Opgeslagen", "Aantekening opgeslagen.", "OK");
         }
 
         private async void OnDeleteClicked(object sender, EventArgs e)

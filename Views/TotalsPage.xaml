@@ -2,20 +2,61 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ReiskostenApp.Views.TotalsPage"
-             Title="Totals"
-             BackgroundColor="{DynamicResource BackgroundColor}">
-    <StackLayout Padding="12">
-        <CollectionView x:Name="TotalsCollection">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Padding="8" ColumnDefinitions="*,Auto">
-                        <Label Text="{Binding Year}" />
-                        <Label Grid.Column="1" Text="{Binding TotalAmount, StringFormat='{}{0:C}'}" HorizontalOptions="End" />
-                        <Label Grid.Row="1" Text="{Binding Month}" FontSize="Micro" />
-                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding TotalDays, StringFormat='Days: {0}'}" HorizontalOptions="End" FontSize="Micro" />
+             Title="Totalen"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <CollectionView x:Name="TotalsCollection" Margin="12">
+        <CollectionView.Header>
+            <Grid ColumnDefinitions="*,80,120" Padding="12,8" Margin="0,0,0,4">
+                <Label Text="Maand"
+                       FontAttributes="Bold"
+                       TextColor="{DynamicResource SecondaryTextColor}" />
+                <Label Grid.Column="1"
+                       Text="Dagen"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"
+                       TextColor="{DynamicResource SecondaryTextColor}" />
+                <Label Grid.Column="2"
+                       Text="Totaal"
+                       FontAttributes="Bold"
+                       HorizontalOptions="End"
+                       TextColor="{DynamicResource SecondaryTextColor}" />
+            </Grid>
+        </CollectionView.Header>
+
+        <CollectionView.ItemTemplate>
+            <DataTemplate>
+                <Border Style="{StaticResource MainBorderStyle}" Margin="0,4">
+                    <Grid ColumnDefinitions="*,80,120" Padding="4">
+
+                        <StackLayout VerticalOptions="Center">
+                            <Label Text="{Binding MonthName}"
+                                   FontAttributes="Bold"
+                                   TextColor="{DynamicResource PrimaryTextColor}" />
+                            <Label Text="{Binding Year}"
+                                   FontSize="12"
+                                   TextColor="{DynamicResource SecondaryTextColor}" />
+                        </StackLayout>
+
+                        <Label Grid.Column="1"
+                               Text="{Binding TotalDays}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource AccentColor}" />
+
+                        <Label Grid.Column="2"
+                               Text="{Binding TotalAmount, StringFormat='{}{0:C}'}"
+                               HorizontalOptions="End"
+                               VerticalOptions="Center"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource PrimaryTextColor}" />
                     </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </StackLayout>
+                </Border>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+
 </ContentPage>

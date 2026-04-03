@@ -1,72 +1,57 @@
-using Microsoft.Maui.ApplicationModel; // for MainThread
-using Microsoft.Maui.Controls;
-using ReiskostenApp.Models;
-using ReiskostenApp.Services;
 using System;
-using System.Globalization;
-using System.Linq;
+using Microsoft.Maui.Controls;
+using ReiskostenApp.ViewModels;
 
 namespace ReiskostenApp.Views
 {
     public partial class SettingsPage : ContentPage
     {
-        private readonly DatabaseService _db;
-        private AppSettings _settings = new();
+        private readonly SettingsViewModel _vm;
 
-        public SettingsPage(DatabaseService db)
+        public SettingsPage(SettingsViewModel vm)
         {
             InitializeComponent();
-            _db = db ?? throw new ArgumentNullException(nameof(db));
-            LoadPickers();
+            _vm = vm ?? throw new ArgumentNullException(nameof(vm));
+            BindingContext = _vm;
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await _db.InitializeAsync();
-            _settings = await _db.GetSettingsAsync() ?? new AppSettings();
-
-            // Use exact strings the app expects
-            ThemePicker.ItemsSource = new[] { "Common", "Light", "Dark" };
-            ThemePicker.SelectedItem = string.IsNullOrWhiteSpace(_settings.SelectedTheme) ? "Common" : _settings.SelectedTheme;
-
-            RateEntry.Text = _settings.RatePerDay.ToString(CultureInfo.InvariantCulture);
-            MonthPicker.SelectedIndex = Math.Clamp((_settings.SelectedMonth == 0 ? DateTime.Now.Month : _settings.SelectedMonth) - 1, 0, 11);
-            YearPicker.SelectedItem = _settings.SelectedYear == 0 ? DateTime.Now.Year : _settings.SelectedYear;
+            await _vm.InitializeAsync();
+            ApplyPickerTheme();
         }
 
-        void LoadPickers()
+        void ApplyPickerTheme()
         {
-            MonthPicker.ItemsSource = CultureInfo.CurrentCulture.DateTimeFormat.MonthNames.Take(12).ToList();
-            var years = Enumerable.Range(DateTime.Now.Year - 5, 11).ToList();
-            YearPicker.ItemsSource = years;
+            if (Application.Current?.Resources.TryGetValue("EntryBackgroundColor", out var val) == true && val is Color color)
+            {
+                ThemePicker.BackgroundColor = color;
+                MonthPicker.BackgroundColor = color;
+                YearPicker.BackgroundColor = color;
+            }
         }
 
         private async void OnSaveClicked(object sender, EventArgs e)
         {
-            // Normalize selected theme string
-            var selected = ThemePicker.SelectedItem?.ToString()?.Trim() ?? "Common";
-            if (string.Equals(selected, "common", StringComparison.OrdinalIgnoreCase)) selected = "Common";
-            else if (string.Equals(selected, "dark", StringComparison.OrdinalIgnoreCase)) selected = "Dark";
-            else if (string.Equals(selected, "light", StringComparison.OrdinalIgnoreCase)) selected = "Light";
-            else selected = "Common";
-
-            _settings.SelectedTheme = selected;
-
-            if (decimal.TryParse(RateEntry.Text, out var rate)) _settings.RatePerDay = rate;
-            _settings.SelectedMonth = MonthPicker.SelectedIndex >= 0 ? MonthPicker.SelectedIndex + 1 : DateTime.Now.Month;
-            _settings.SelectedYear = YearPicker.SelectedItem is int y ? y : DateTime.Now.Year;
-
-            await _db.SaveSettingsAsync(_settings);
-
-            // Apply theme on UI thread
-            MainThread.BeginInvokeOnMainThread(() =>
+            System.Diagnostics.Debug.WriteLine($"[Settings] Save clicked. SelectedTheme={_vm.SelectedTheme}");
+            try
             {
-                if (Application.Current is App app)
-                    app.ApplyThemeResources(selected);
-            });
+                await _vm.SaveAsync();
+                System.Diagnostics.Debug.WriteLine($"[Settings] SaveAsync done.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Settings] SaveAsync failed: {ex}");
+            }
 
-            await DisplayAlert("Saved", $"Settings saved. Theme: {selected}", "OK");
+            System.Diagnostics.Debug.WriteLine($"[Settings] Calling ApplyThemeResources with: {_vm.SelectedTheme}");
+            if (Application.Current is App app)
+                app.ApplyThemeResources(_vm.SelectedTheme);
+            else
+                System.Diagnostics.Debug.WriteLine("[Settings] Application.Current is NOT App!");
+
+            await DisplayAlert("Saved", $"Settings saved. Theme: {_vm.SelectedTheme}", "OK");
         }
     }
 }

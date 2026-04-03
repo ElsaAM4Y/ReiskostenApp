@@ -1,12 +1,12 @@
-﻿using System;
+using ReiskostenApp.Models;
+using ReiskostenApp.Services;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Windows.Input;
-using Microsoft.Maui.Controls;
-using ReiskostenApp.Models;
-using ReiskostenApp.Services;
 
 namespace ReiskostenApp.ViewModels
 {
@@ -15,80 +15,63 @@ namespace ReiskostenApp.ViewModels
         private readonly DatabaseService _db;
         private AppSettings _settings = new();
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        public ICommand SaveCommand { get; }
-        public string[] ThemeOptions { get; } = new[] { "Common", "Light", "Dark" };
-
-        public SettingsViewModel(DatabaseService db)
-        {
-            _db = db ?? throw new ArgumentNullException(nameof(db));
-            SaveCommand = new Command(async () => await SaveAsync());
-        }
+        public List<string> Themes { get; } = new() { "Common", "Light", "Dark" };
+        public List<string> MonthNames { get; } = CultureInfo.CurrentCulture.DateTimeFormat.MonthNames.Take(12).ToList();
+        public List<int> Years { get; } = Enumerable.Range(DateTime.Now.Year - 5, 11).ToList();
 
         public string SelectedTheme
         {
-            get => _settings.SelectedTheme ?? "Common";
-            set
-            {
-                if (_settings.SelectedTheme == value) return;
-                _settings.SelectedTheme = value;
-                OnPropertyChanged(nameof(SelectedTheme));
-            }
+            get => _settings.SelectedTheme;
+            set { _settings.SelectedTheme = value; OnPropertyChanged(); }
         }
 
         public decimal RatePerDay
         {
             get => _settings.RatePerDay;
-            set
-            {
-                if (_settings.RatePerDay == value) return;
-                _settings.RatePerDay = value;
-                OnPropertyChanged(nameof(RatePerDay));
-            }
+            set { _settings.RatePerDay = value; OnPropertyChanged(); }
         }
 
-        public int SelectedMonth
+        public int SelectedMonthIndex
         {
-            get => _settings.SelectedMonth;
-            set
-            {
-                if (_settings.SelectedMonth == value) return;
-                _settings.SelectedMonth = value;
-                OnPropertyChanged(nameof(SelectedMonth));
-            }
+            get => Math.Clamp((_settings.SelectedMonth == 0 ? DateTime.Now.Month : _settings.SelectedMonth) - 1, 0, 11);
+            set { _settings.SelectedMonth = value + 1; OnPropertyChanged(); }
         }
 
         public int SelectedYear
         {
-            get => _settings.SelectedYear;
-            set
-            {
-                if (_settings.SelectedYear == value) return;
-                _settings.SelectedYear = value;
-                OnPropertyChanged(nameof(SelectedYear));
-            }
+            get => _settings.SelectedYear == 0 ? DateTime.Now.Year : _settings.SelectedYear;
+            set { _settings.SelectedYear = value; OnPropertyChanged(); }
         }
 
-        public async Task LoadAsync()
+        public SettingsViewModel(DatabaseService db)
         {
-            await _db.InitializeAsync();
-            _settings = await _db.GetSettingsAsync() ?? new AppSettings();
-            OnPropertyChanged(string.Empty); // refresh all bindings
+            _db = db ?? throw new ArgumentNullException(nameof(db));
+        }
+
+        public async Task InitializeAsync()
+        {
+            try
+            {
+                await _db.InitializeAsync();
+                _settings = await _db.GetSettingsAsync() ?? new AppSettings();
+                OnPropertyChanged(nameof(SelectedTheme));
+                OnPropertyChanged(nameof(RatePerDay));
+                OnPropertyChanged(nameof(SelectedMonthIndex));
+                OnPropertyChanged(nameof(SelectedYear));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"SettingsViewModel.InitializeAsync error: {ex}");
+            }
         }
 
         public async Task SaveAsync()
         {
             await _db.SaveSettingsAsync(_settings);
-
-            // Apply theme immediately via App if available
-            if (Application.Current is App app)
-            {
-                app.ApplyThemeResources(_settings.SelectedTheme);
-            }
         }
 
-        protected void OnPropertyChanged(string name) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

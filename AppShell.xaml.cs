@@ -1,17 +1,23 @@
-﻿using Microsoft.Maui.Controls;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Maui.Controls;
 
 namespace ReiskostenApp
 {
     public partial class AppShell : Shell
     {
-        public AppShell()
+        public AppShell(IServiceProvider services)
         {
             InitializeComponent();
 
-            Routing.RegisterRoute(nameof(Views.MonthPage), typeof(Views.MonthPage));
-            Routing.RegisterRoute(nameof(Views.TotalsPage), typeof(Views.TotalsPage));
-            Routing.RegisterRoute(nameof(Views.NotesPage), typeof(Views.NotesPage));
-            Routing.RegisterRoute(nameof(Views.SettingsPage), typeof(Views.SettingsPage));
+            MonthContent.ContentTemplate    = new DataTemplate(() => services.GetRequiredService<Views.MonthPage>());
+            TotalsContent.ContentTemplate   = new DataTemplate(() => services.GetRequiredService<Views.TotalsPage>());
+            NotesContent.ContentTemplate    = new DataTemplate(() => services.GetRequiredService<Views.NotesPage>());
+            SettingsContent.ContentTemplate = new DataTemplate(() => services.GetRequiredService<Views.SettingsPage>());
+
+            Routing.RegisterRoute("MonthPage",    typeof(Views.MonthPage));
+            Routing.RegisterRoute("TotalsPage",   typeof(Views.TotalsPage));
+            Routing.RegisterRoute("NotesPage",    typeof(Views.NotesPage));
+            Routing.RegisterRoute("SettingsPage", typeof(Views.SettingsPage));
         }
     }
 }

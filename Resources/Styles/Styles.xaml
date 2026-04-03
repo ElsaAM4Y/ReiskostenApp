@@ -98,7 +98,7 @@
     <!-- DatePicker -->
     <Style TargetType="DatePicker" x:Key="DatePicker">
         <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
-        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="Background" Value="{DynamicResource EntryBackgroundColor}" />
         <Setter Property="FontFamily" Value="RobotoRegular"/>
         <Setter Property="FontSize" Value="Medium"/>
     </Style>
@@ -154,6 +154,7 @@
         <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
         <Setter Property="TitleColor" Value="{DynamicResource SecondaryTextColor}" />
         <Setter Property="Background" Value="{DynamicResource EntryBackgroundColor}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource EntryBackgroundColor}" />
         <Setter Property="FontFamily" Value="RobotoRegular"/>
         <Setter Property="FontSize" Value="Medium"/>
     </Style>

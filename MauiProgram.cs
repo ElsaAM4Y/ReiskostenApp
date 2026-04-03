@@ -31,6 +31,7 @@ namespace ReiskostenApp
             builder.Services.AddTransient<ReiskostenApp.Views.TotalsPage>();
             builder.Services.AddTransient<ReiskostenApp.Views.NotesPage>();
             builder.Services.AddTransient<ReiskostenApp.Views.SettingsPage>();
+            builder.Services.AddSingleton<AppShell>();
 
             // Register ViewModels if you prefer DI for them
             builder.Services.AddTransient<ReiskostenApp.ViewModels.MonthTotalViewModel>();

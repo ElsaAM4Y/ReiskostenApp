@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 using ReiskostenApp.Models;
@@ -16,6 +18,7 @@ namespace ReiskostenApp.Views
         private int _year;
         private int _month;
         private decimal _ratePerDay;
+        private readonly Dictionary<int, CancellationTokenSource> _rowCts = new();
 
         public ObservableCollection<DayRecordViewModel> Days { get; } = new();
 
@@ -39,7 +42,17 @@ namespace ReiskostenApp.Views
             MonthPicker.SelectedIndex = Math.Clamp(_month - 1, 0, 11);
             YearPicker.SelectedItem = _year;
 
+            ApplyPickerTheme();
             await LoadMonthAsync(_year, _month);
+        }
+
+        void ApplyPickerTheme()
+        {
+            if (Application.Current?.Resources.TryGetValue("EntryBackgroundColor", out var val) == true && val is Color color)
+            {
+                MonthPicker.BackgroundColor = color;
+                YearPicker.BackgroundColor = color;
+            }
         }
 
         private async Task EnsureInitializedAsync()
@@ -85,6 +98,7 @@ namespace ReiskostenApp.Views
         async Task LoadMonthAsync(int year, int month)
         {
             Days.Clear();
+            _rowCts.Clear();
 
             var existing = await _db.GetDayRecordsForMonthAsync(year, month);
             var daysInMonth = DateTime.DaysInMonth(year, month);
@@ -100,13 +114,10 @@ namespace ReiskostenApp.Views
                     Date = date,
                     Day = d,
                     Value = rec?.Value ?? 0,
-                    Notes = rec?.Notes ?? string.Empty,
-                    Amount = rec?.Amount ?? 0m
+                    Notes = rec?.Notes ?? string.Empty
                 };
 
-                vm.ValueChanged += async (sender, args) => await OnDayValueChanged(vm);
-                vm.NotesChanged += async (sender, args) => await OnDayNotesChanged(vm);
-
+                vm.Changed += async (sender, args) => await OnDayChangedAsync(vm);
                 Days.Add(vm);
             }
 
@@ -114,70 +125,44 @@ namespace ReiskostenApp.Views
             await UpdateMonthTotalLabel();
         }
 
-        async Task OnDayValueChanged(DayRecordViewModel vm)
+        async Task OnDayChangedAsync(DayRecordViewModel vm)
         {
-            if (vm.Value < 0) vm.Value = 0;
-            if (vm.Value > 2) vm.Value = 2;
+            if (_rowCts.TryGetValue(vm.Day, out var existing))
+                existing.Cancel();
 
-            var record = new DayRecord
+            var cts = new CancellationTokenSource();
+            _rowCts[vm.Day] = cts;
+
+            try
             {
-                Id = vm.Id,
-                Date = vm.Date,
-                Value = vm.Value,
-                Notes = vm.Notes
-            };
-
-            await _db.SaveDayRecordAsync(record, _ratePerDay);
-
-            var saved = (await _db.GetDayRecordsForMonthAsync(vm.Date.Year, vm.Date.Month))
-                        .FirstOrDefault(r => r.Date.Date == vm.Date.Date);
-            if (saved != null)
-            {
-                vm.Id = saved.Id;
-                vm.Amount = saved.Amount;
+                await Task.Delay(500, cts.Token);
+                var record = new DayRecord { Id = vm.Id, Date = vm.Date, Value = vm.Value, Notes = vm.Notes };
+                await _db.SaveDayRecordAsync(record, _ratePerDay);
+                vm.Id = record.Id;
+                await UpdateMonthTotalLabel();
             }
-
-            await UpdateMonthTotalLabel();
-        }
-
-        async Task OnDayNotesChanged(DayRecordViewModel vm)
-        {
-            var record = new DayRecord
-            {
-                Id = vm.Id,
-                Date = vm.Date,
-                Value = vm.Value,
-                Notes = vm.Notes
-            };
-
-            await _db.SaveDayRecordAsync(record, _ratePerDay);
+            catch (TaskCanceledException) { }
         }
 
         async Task UpdateMonthTotalLabel()
         {
             var meta = await _db.GetMonthMetaAsync(_year, _month);
             if (meta != null)
-                MonthTotalLabel.Text = $"Total days: {meta.TotalDays} — Total amount: {meta.TotalAmount:C}";
+                MonthTotalLabel.Text = $"Aantal keren gewerkt: {meta.TotalDays}  Totaal: {meta.TotalAmount:C}";
             else
-                MonthTotalLabel.Text = "No entries yet";
+                MonthTotalLabel.Text = "Nog geen invoer";
         }
 
         private async void OnSaveClicked(object sender, EventArgs e)
         {
             foreach (var vm in Days)
             {
-                var rec = new DayRecord
-                {
-                    Id = vm.Id,
-                    Date = vm.Date,
-                    Value = vm.Value,
-                    Notes = vm.Notes
-                };
+                var rec = new DayRecord { Id = vm.Id, Date = vm.Date, Value = vm.Value, Notes = vm.Notes };
                 await _db.SaveDayRecordAsync(rec, _ratePerDay);
             }
 
             await UpdateMonthTotalLabel();
-            await DisplayAlert("Saved", "Month saved.", "OK");
+            await DisplayAlert("Opgeslagen", "Maand opgeslagen.", "OK");
         }
     }
 
@@ -186,8 +171,7 @@ namespace ReiskostenApp.Views
         private int _value;
         private string _notes = string.Empty;
 
-        public event EventHandler? ValueChanged;
-        public event EventHandler? NotesChanged;
+        public event EventHandler? Changed;
 
         public int Id { get; set; }
         public DateTime Date { get; set; }
@@ -201,7 +185,7 @@ namespace ReiskostenApp.Views
                 if (_value == value) return;
                 _value = value;
                 OnPropertyChanged();
-                ValueChanged?.Invoke(this, EventArgs.Empty);
+                Changed?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -213,10 +197,8 @@ namespace ReiskostenApp.Views
                 if (_notes == value) return;
                 _notes = value;
                 OnPropertyChanged();
-                NotesChanged?.Invoke(this, EventArgs.Empty);
+                Changed?.Invoke(this, EventArgs.Empty);
             }
         }
-
-        public decimal Amount { get; set; }
     }
 }

@@ -3,52 +3,59 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="ReiskostenApp.Views.SettingsPage"
-    BackgroundColor="{DynamicResource BackgroundColor}"
-    Title="Settings">
+    BackgroundColor="{DynamicResource PageBackgroundColor}"
+    Title="Instellingen">
 
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="12">
 
-            <Label Text="Theme" 
-             FontAttributes="Bold"
-             TextColor="{DynamicResource TextColor}" />
+            <Label Text="Theme"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource PrimaryTextColor}" />
 
             <Picker x:Name="ThemePicker"
-              Title="Select theme"
-              TextColor="{DynamicResource TextColor}" />
+                    Title="Select theme"
+                    ItemsSource="{Binding Themes}"
+                    SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                    TextColor="{DynamicResource PrimaryTextColor}" />
 
-            <Label Text="Rate per day" 
-             FontAttributes="Bold"
-             TextColor="{DynamicResource TextColor}" />
+            <Label Text="Rate per day"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource PrimaryTextColor}" />
 
             <Entry x:Name="RateEntry"
-             Keyboard="Numeric"
-             Placeholder="0.00"
-             BackgroundColor="{DynamicResource EntryBackgroundColor}"
-             TextColor="{DynamicResource TextColor}" />
+                   Keyboard="Numeric"
+                   Placeholder="0.00"
+                   Text="{Binding RatePerDay, Mode=TwoWay}"
+                   BackgroundColor="{DynamicResource EntryBackgroundColor}"
+                   TextColor="{DynamicResource PrimaryTextColor}" />
 
-            <Label Text="Month" 
-             FontAttributes="Bold"
-             TextColor="{DynamicResource TextColor}" />
+            <Label Text="Month"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource PrimaryTextColor}" />
 
             <Picker x:Name="MonthPicker"
-              Title="Select month"
-              TextColor="{DynamicResource TextColor}" />
+                    Title="Select month"
+                    ItemsSource="{Binding MonthNames}"
+                    SelectedIndex="{Binding SelectedMonthIndex, Mode=TwoWay}"
+                    TextColor="{DynamicResource PrimaryTextColor}" />
 
-            <Label Text="Year" 
-             FontAttributes="Bold"
-             TextColor="{DynamicResource TextColor}" />
+            <Label Text="Year"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource PrimaryTextColor}" />
 
             <Picker x:Name="YearPicker"
-              Title="Select year"
-              TextColor="{DynamicResource TextColor}" />
+                    Title="Select year"
+                    ItemsSource="{Binding Years}"
+                    SelectedItem="{Binding SelectedYear, Mode=TwoWay}"
+                    TextColor="{DynamicResource PrimaryTextColor}" />
 
             <Button Text="Save"
-              Clicked="OnSaveClicked"
-              BackgroundColor="{DynamicResource PrimaryColor}"
-              TextColor="{DynamicResource TextColor}"
-              CornerRadius="6"
-              HeightRequest="44" />
+                    Clicked="OnSaveClicked"
+                    BackgroundColor="{DynamicResource ButtonBackgroundColor}"
+                    TextColor="{DynamicResource ButtonTextColor}"
+                    CornerRadius="6"
+                    HeightRequest="44" />
 
         </VerticalStackLayout>
     </ScrollView>

@@ -2,28 +2,30 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ReiskostenApp.Views.NotesPage"
-             Title="Notes"
-             BackgroundColor="{DynamicResource BackgroundColor}">
+             Title="Aantekeningen"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+    <ScrollView>
     <StackLayout Padding="12" Spacing="8">
-        <Button Text="Add Note" Clicked="OnAddClicked" />
+        <StackLayout Padding="6">
+            <Entry x:Name="NoteTitle" Placeholder="Titel" BackgroundColor="{DynamicResource EntryBackgroundColor}" TextColor="{DynamicResource PrimaryTextColor}" />
+            <Editor x:Name="NoteContent" HeightRequest="120" BackgroundColor="{DynamicResource EntryBackgroundColor}" TextColor="{DynamicResource PrimaryTextColor}" />
+            <StackLayout Orientation="Horizontal" Spacing="8">
+                <Button Text="Nieuw" Clicked="OnAddClicked" />
+                <Button Text="Opslaan" Clicked="OnSaveClicked" />
+                <Button Text="Verwijderen" Clicked="OnDeleteClicked" />
+            </StackLayout>
+        </StackLayout>
+
         <CollectionView x:Name="NotesCollection" SelectionMode="Single" SelectionChanged="OnSelectionChanged">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Padding="8">
-                        <Label Text="{Binding Title}" TextColor="{DynamicResource TextColor}" />
-                        <Label Grid.Row="1" Text="{Binding Updated, StringFormat='Updated: {0:G}'}" FontSize="Micro" TextColor="{DynamicResource TextColor}" />
+                    <Grid Padding="8" RowDefinitions="Auto,Auto">
+                        <Label Text="{Binding Title}" FontSize="18" TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Label Grid.Row="1" Text="{Binding Updated, StringFormat='Bijgewerkt: {0:G}'}" FontSize="Micro" TextColor="{DynamicResource SecondaryTextColor}" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-
-        <StackLayout Padding="6">
-            <Entry x:Name="NoteTitle" Placeholder="Title" BackgroundColor="{DynamicResource EntryBackgroundColor}" />
-            <Editor x:Name="NoteContent" HeightRequest="120" BackgroundColor="{DynamicResource EntryBackgroundColor}" />
-            <StackLayout Orientation="Horizontal" Spacing="8">
-                <Button Text="Save" Clicked="OnSaveClicked" />
-                <Button Text="Delete" Clicked="OnDeleteClicked" />
-            </StackLayout>
-        </StackLayout>
     </StackLayout>
+    </ScrollView>
 </ContentPage>
