@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Maui.Controls;
 using ReiskostenApp.ViewModels;
+using ReiskostenApp.Services;
 
 namespace ReiskostenApp.Views
 {
@@ -11,15 +12,14 @@ namespace ReiskostenApp.Views
         public SettingsPage(SettingsViewModel vm)
         {
             InitializeComponent();
-            _vm = vm ?? throw new ArgumentNullException(nameof(vm));
             BindingContext = _vm;
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await _vm.InitializeAsync();
-            ApplyPickerTheme();
+            var savedTheme = Preferences.Get("AppTheme", "Light");
+            ThemePicker.SelectedItem = savedTheme;
         }
 
         void ApplyPickerTheme()
@@ -34,23 +34,10 @@ namespace ReiskostenApp.Views
 
         private async void OnSaveClicked(object sender, EventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"[Settings] Save clicked. SelectedTheme={_vm.SelectedTheme}");
-            try
+            if (ThemePicker.SelectedItem is string selectedTheme)
             {
-                await _vm.SaveAsync();
-                System.Diagnostics.Debug.WriteLine($"[Settings] SaveAsync done.");
+                ThemeService.SetTheme(selectedTheme);
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[Settings] SaveAsync failed: {ex}");
-            }
-
-            System.Diagnostics.Debug.WriteLine($"[Settings] Calling ApplyThemeResources with: {_vm.SelectedTheme}");
-            if (Application.Current is App app)
-                app.ApplyThemeResources(_vm.SelectedTheme);
-            else
-                System.Diagnostics.Debug.WriteLine("[Settings] Application.Current is NOT App!");
-
             ApplyPickerTheme();
             await DisplayAlert("Saved", $"Settings saved. Theme: {_vm.SelectedTheme}", "OK");
         }

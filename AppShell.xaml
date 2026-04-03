@@ -1,33 +1,28 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       xmlns:views="clr-namespace:ReiskostenApp.Views"
-       x:Class="ReiskostenApp.AppShell"
-       Shell.BackgroundColor="{DynamicResource TabBarBackgroundColor}"
-       Shell.TitleColor="{DynamicResource PrimaryTextColor}"
-       FlyoutBehavior="Flyout">
+<Shell
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:ReiskostenApp.Views"
+    x:Class="ReiskostenApp.AppShell"
+    FlyoutBehavior="Flyout" >
 
     <Shell.FlyoutHeader>
-        <Grid x:Name="FlyoutHeaderGrid" Padding="16" RowDefinitions="Auto,Auto">
             <Label x:Name="FlyoutTitle" Text="Reiskosten" FontAttributes="Bold" FontSize="18" />
-
-        </Grid>
     </Shell.FlyoutHeader>
+            <!-- Flyout menu items -->
+            <FlyoutItem Title="Maand" Icon="calendar.png">
+                <ShellContent ContentTemplate="{DataTemplate views:MonthPage}" />
+            </FlyoutItem>
 
-    <FlyoutItem Title="Maand" Icon="icon_month.png">
-        <ShellContent x:Name="MonthContent" Route="MonthPage" />
-    </FlyoutItem>
+            <FlyoutItem Title="Totaal" Icon="totals.png">
+                <ShellContent ContentTemplate="{DataTemplate views:TotalsPage}" />
+            </FlyoutItem>
 
-    <FlyoutItem Title="Totalen" Icon="icon_totals.png">
-        <ShellContent x:Name="TotalsContent" Route="TotalsPage" />
-    </FlyoutItem>
+            <FlyoutItem Title="Notities" Icon="notes.png">
+                <ShellContent ContentTemplate="{DataTemplate views:NotesPage}" />
+            </FlyoutItem>
 
-    <FlyoutItem Title="Aantekeningen" Icon="icon_notes.png">
-        <ShellContent x:Name="NotesContent" Route="NotesPage" />
-    </FlyoutItem>
-
-    <FlyoutItem Title="Instellingen" Icon="icon_settings.png">
-        <ShellContent x:Name="SettingsContent" Route="SettingsPage" />
-    </FlyoutItem>
+            <FlyoutItem Title="Instellingen" Icon="settings.png">
+                <ShellContent ContentTemplate="{DataTemplate views:SettingsPage}" />
+            </FlyoutItem>
 
 </Shell>

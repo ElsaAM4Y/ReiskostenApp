@@ -1,7 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging.Messages;
-using Microsoft.Maui.Controls;
+﻿using Microsoft.Maui.Controls;
 using System.Linq;
 
 namespace ReiskostenApp.Services
@@ -10,15 +7,14 @@ namespace ReiskostenApp.Services
     {
         public static void SetTheme(string theme)
         {
+            // Save selected theme
             Preferences.Set("AppTheme", theme);
 
             // Create the new theme dictionary
             ResourceDictionary newTheme = theme switch
             {
                 "Dark" => new ReiskostenApp.Resources.Styles.Dark(),
-                "Light" => new ReiskostenApp.Resources.Styles.Light(),
-                /// "Blue" => new ReiskostenApp.Resources.Styles.Blue(),
-                _ => new ReiskostenApp.Resources.Styles.Common()
+                _ => new ReiskostenApp.Resources.Styles.Light()
             };
 
             var merged = Application.Current.Resources.MergedDictionaries;
@@ -34,32 +30,23 @@ namespace ReiskostenApp.Services
 
             merged.Add(newTheme);
 
-            //// 🔥 Update icon resource based on theme
-            //switch (theme)
-            //{
-            //    case "Dark":
-            //        Application.Current.Resources["WebsiteIconSource"] =
-            //            Application.Current.Resources["WebsiteIconSourceDark"];
-            //        break;
+            // Update icon resource based on theme
+            switch (theme)
+            {
+                case "Dark":
+                    Application.Current.Resources["WebsiteIconSource"] =
+                        Application.Current.Resources["WebsiteIconSourceDark"];
+                    break;
 
-            //    case "Blue":
-            //        Application.Current.Resources["WebsiteIconSource"] =
-            //            Application.Current.Resources["WebsiteIconSourceBlue"];
-            //        break;
-
-            //    default:
-            //        Application.Current.Resources["WebsiteIconSource"] = "website.svg";
-            //        break;
+                default:
+                    Application.Current.Resources["WebsiteIconSource"] = "website.svg";
+                    break;
             }
-
-            // Notify pages
-            //WeakReferenceMessenger.Default.Send(new ThemeChangedMessage(theme));
         }
 
-    public class ThemeChangedMessage : ValueChangedMessage<string>
-    {
-        public ThemeChangedMessage(string value) : base(value) { }
+        public static void LoadSavedTheme()
+        {
+            SetTheme(Preferences.Get("AppTheme", "Light"));
+        }
     }
-
-
 }
